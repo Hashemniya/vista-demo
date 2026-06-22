@@ -58,6 +58,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .tl-dot.active{background:#161b22;border-color:#1D9E75;color:#1D9E75;}
 .tl-label{font-size:10px;color:#8b949e;text-align:center;max-width:56px;}
 .flag-bar{background:#1a1200;border:1px solid #3d2a0a;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:11px;color:#f59e0b;margin-bottom:10px;}
+.hidden{display:none;}
 </style>
 </head>
 <body>
@@ -112,13 +113,13 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 
   <div class="panel">
     <div class="panel-title"><i class="ti ti-scan"></i> Detection & identification</div>
-    <div class="ocr-row"><span class="ocr-label">BIC code</span><span class="ocr-val">TCKU 305842 6</span></div>
-    <div class="ocr-row"><span class="ocr-label">Type / size</span><span class="ocr-val">20ft · Dry general</span></div>
-    <div class="ocr-row"><span class="ocr-label">Condition grade</span><span class="badge badge-amber">Grade B</span></div>
-    <div class="ocr-row"><span class="ocr-label">Damage #1</span><span class="badge badge-red">Dent · 91%</span></div>
-    <div class="ocr-row"><span class="ocr-label">Damage #2</span><span class="badge badge-amber">Scratch · 85%</span></div>
-    <div class="ocr-row"><span class="ocr-label">Damage #3</span><span class="badge badge-red">Corrosion · 78%</span></div>
-    <div class="ocr-row"><span class="ocr-label">Low conf. flag</span><span class="badge badge-blue">Human review ×1</span></div>
+    <div class="ocr-row"><span class="ocr-label">BIC code</span><span class="ocr-val" id="r-bic">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Type / size</span><span class="ocr-val" id="r-type">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Condition grade</span><span id="r-grade" class="ocr-val">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Damage #1</span><span id="r-d1" class="ocr-val">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Damage #2</span><span id="r-d2" class="ocr-val">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Damage #3</span><span id="r-d3" class="ocr-val">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Low conf. flag</span><span id="r-flag" class="ocr-val">—</span></div>
   </div>
 </div>
 
@@ -137,16 +138,16 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
         <line x1="120" y1="-42" x2="120" y2="42" stroke="#1D9E75" stroke-width="0.4" opacity="0.3"/>
         <polygon points="-180,-42 -210,-22 -210,62 -180,42" fill="#0a2030" stroke="#1D9E75" stroke-width="0.8"/>
         <polygon points="180,-42 210,-22 210,62 180,42" fill="#0a2030" stroke="#1D9E75" stroke-width="0.8"/>
-        <circle cx="-100" cy="10" r="9" fill="rgba(248,113,113,0.2)" stroke="#f87171" stroke-width="1.5"/>
-        <line x1="-100" y1="-30" x2="-100" y2="1" stroke="#f87171" stroke-width="0.8" stroke-dasharray="3,2"/>
-        <text x="-100" y="-34" fill="#f87171" font-size="10" font-family="monospace" text-anchor="middle">① dent</text>
-        <circle cx="50" cy="-22" r="9" fill="rgba(250,204,21,0.15)" stroke="#facc15" stroke-width="1.5"/>
-        <line x1="50" y1="-13" x2="50" y2="-34" stroke="#facc15" stroke-width="0.8" stroke-dasharray="3,2"/>
-        <text x="50" y="-38" fill="#facc15" font-size="10" font-family="monospace" text-anchor="middle">② scratch</text>
-        <circle cx="155" cy="22" r="9" fill="rgba(248,113,113,0.2)" stroke="#f87171" stroke-width="1.5"/>
-        <line x1="155" y1="31" x2="155" y2="52" stroke="#f87171" stroke-width="0.8" stroke-dasharray="3,2"/>
-        <text x="155" y="62" fill="#f87171" font-size="10" font-family="monospace" text-anchor="middle">③ corrosion</text>
-        <text x="0" y="72" fill="#5DCAA5" font-size="9" font-family="monospace" text-anchor="middle" opacity="0.6">TCKU 305842 6 · multi-view reconstruction · 3 defects pinned</text>
+        <circle id="pin1" cx="-100" cy="10" r="9" fill="rgba(248,113,113,0)" stroke="none"/>
+        <line id="pin1-line" x1="-100" y1="-30" x2="-100" y2="1" stroke="#f87171" stroke-width="0.8" stroke-dasharray="3,2" opacity="0"/>
+        <text id="pin1-label" x="-100" y="-34" fill="#f87171" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">① dent</text>
+        <circle id="pin2" cx="50" cy="-22" r="9" fill="rgba(250,204,21,0)" stroke="none"/>
+        <line id="pin2-line" x1="50" y1="-13" x2="50" y2="-34" stroke="#facc15" stroke-width="0.8" stroke-dasharray="3,2" opacity="0"/>
+        <text id="pin2-label" x="50" y="-38" fill="#facc15" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">② scratch</text>
+        <circle id="pin3" cx="155" cy="22" r="9" fill="rgba(248,113,113,0)" stroke="none"/>
+        <line id="pin3-line" x1="155" y1="31" x2="155" y2="52" stroke="#f87171" stroke-width="0.8" stroke-dasharray="3,2" opacity="0"/>
+        <text id="pin3-label" x="155" y="62" fill="#f87171" font-size="10" font-family="monospace" text-anchor="middle" opacity="0">③ corrosion</text>
+        <text id="twin-footer" x="0" y="72" fill="#5DCAA5" font-size="9" font-family="monospace" text-anchor="middle" opacity="0">TCKU 305842 6 · multi-view reconstruction · 3 defects pinned</text>
       </g>
     </svg>
   </div>
@@ -155,24 +156,24 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 <div class="grid-bottom">
   <div class="panel">
     <div class="panel-title"><i class="ti ti-calculator"></i> Repair estimation · IICL rules</div>
-    <div class="cost-row"><span class="cost-label">① Dent &gt;2cm → Cat B repair</span><span class="cost-val">$180–220</span></div>
-    <div class="cost-row"><span class="cost-label">② Scratch → surface treatment</span><span class="cost-val">$60–90</span></div>
-    <div class="cost-row"><span class="cost-label">③ Corrosion → patch + coat</span><span class="cost-val">$140–180</span></div>
-    <div class="cost-row"><span class="cost-label">Shipping-line config</span><span class="badge badge-blue">MSC standard</span></div>
+    <div class="cost-row"><span class="cost-label">① Dent &gt;2cm → Cat B repair</span><span class="cost-val" id="c1">—</span></div>
+    <div class="cost-row"><span class="cost-label">② Scratch → surface treatment</span><span class="cost-val" id="c2">—</span></div>
+    <div class="cost-row"><span class="cost-label">③ Corrosion → patch + coat</span><span class="cost-val" id="c3">—</span></div>
+    <div class="cost-row"><span class="cost-label">Shipping-line config</span><span id="c4" class="ocr-val">—</span></div>
     <div class="cost-total">
       <span style="font-size:12px;color:#8b949e;">Total estimate</span>
-      <span style="font-size:16px;font-weight:600;color:#e6edf3;">$380 – $490</span>
+      <span id="ctotal" style="font-size:16px;font-weight:600;color:#e6edf3;">—</span>
     </div>
   </div>
 
   <div class="panel">
     <div class="panel-title"><i class="ti ti-file-text"></i> Audit report</div>
-    <div class="ocr-row"><span class="ocr-label">Inspection ID</span><span class="ocr-val">VIS-20260622-0047</span></div>
-    <div class="ocr-row"><span class="ocr-label">Timestamp</span><span class="ocr-val">2026-06-22 · 14:32</span></div>
-    <div class="ocr-row"><span class="ocr-label">Images captured</span><span class="ocr-val">24 frames</span></div>
-    <div class="ocr-row"><span class="ocr-label">3D twin</span><span class="badge badge-green">Linked</span></div>
-    <div class="ocr-row"><span class="ocr-label">Human override</span><span class="badge badge-blue">None logged</span></div>
-    <button class="export-btn" onclick="alert('Report VIS-20260622-0047 exported successfully.')">
+    <div class="ocr-row"><span class="ocr-label">Inspection ID</span><span class="ocr-val" id="rep-id">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Timestamp</span><span class="ocr-val" id="rep-ts">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Images captured</span><span class="ocr-val" id="rep-img">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">3D twin</span><span id="rep-twin" class="ocr-val">—</span></div>
+    <div class="ocr-row"><span class="ocr-label">Human override</span><span id="rep-ov" class="ocr-val">—</span></div>
+    <button class="export-btn hidden" id="export-btn" onclick="alert('Report VIS-20260622-0047 exported successfully.')">
       <i class="ti ti-download"></i> Export PDF report
     </button>
   </div>
@@ -192,44 +193,83 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 </div>
 
 <script>
-let secs = 0;
-const timerEl = document.getElementById('timer');
-const fill = document.getElementById('tlfill');
-const steps = ['s1','s2','s3','s4','s5','s6'];
-const stepIcons = ['ti-camera','ti-scan','ti-eye','ti-box-model','ti-calculator','ti-file-text'];
-const stepTimes = [10, 30, 60, 100, 140, 170];
+var secs = 0;
+var timerEl = document.getElementById('timer');
+var fill = document.getElementById('tlfill');
+var steps = ['s1','s2','s3','s4','s5','s6'];
+var icons = ['ti-camera','ti-scan','ti-eye','ti-box-model','ti-calculator','ti-file-text'];
+var stepTimes = [0, 30, 60, 100, 140, 170];
 
-function resetDots() {
-  steps.forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.className = 'tl-dot';
-    el.innerHTML = '<i class="ti ' + stepIcons[i] + '"></i>';
-  });
-}
-resetDots();
+function show(id, html) { document.getElementById(id).innerHTML = html; }
+function attr(id, a, v) { document.getElementById(id).setAttribute(a, v); }
 
-setInterval(() => {
+setInterval(function() {
   secs++;
-  const m = Math.floor(secs/60).toString().padStart(2,'0');
-  const s = (secs%60).toString().padStart(2,'0');
+  var m = Math.floor(secs/60).toString().padStart(2,'0');
+  var s = (secs%60).toString().padStart(2,'0');
   timerEl.textContent = m+':'+s;
-  const pct = Math.min((secs/180)*100, 100);
-  fill.style.width = pct + '%';
-  steps.forEach((id, i) => {
-    const el = document.getElementById(id);
+  fill.style.width = Math.min((secs/180)*100, 100) + '%';
+
+  steps.forEach(function(id, i) {
+    var el = document.getElementById(id);
     el.className = 'tl-dot';
+    el.innerHTML = '<i class="ti ' + icons[i] + '"></i>';
     if (secs >= stepTimes[i]) {
-      if (i === steps.length-1 || secs < stepTimes[i+1]) {
-        el.classList.add('active');
-        el.innerHTML = '<i class="ti ' + stepIcons[i] + '"></i>';
-      } else {
-        el.classList.add('done');
+      var isLast = (i === steps.length - 1);
+      var nextDone = !isLast && secs >= stepTimes[i+1];
+      if (nextDone) {
+        el.className = 'tl-dot done';
         el.innerHTML = '<i class="ti ti-check"></i>';
+      } else {
+        el.className = 'tl-dot active';
       }
-    } else {
-      el.innerHTML = '<i class="ti ' + stepIcons[i] + '"></i>';
     }
   });
+
+  if (secs === 30) {
+    show('r-bic','TCKU 305842 6');
+    show('r-type','20ft · Dry general');
+  }
+  if (secs === 60) {
+    show('r-grade','<span class="badge badge-amber">Grade B</span>');
+    show('r-d1','<span class="badge badge-red">Dent · 91%</span>');
+    show('r-d2','<span class="badge badge-amber">Scratch · 85%</span>');
+    show('r-d3','<span class="badge badge-red">Corrosion · 78%</span>');
+    show('r-flag','<span class="badge badge-blue">Human review ×1</span>');
+  }
+  if (secs === 100) {
+    attr('pin1','fill','rgba(248,113,113,0.2)');
+    attr('pin1','stroke','#f87171');
+    attr('pin1','stroke-width','1.5');
+    attr('pin1-line','opacity','1');
+    attr('pin1-label','opacity','1');
+    attr('pin2','fill','rgba(250,204,21,0.15)');
+    attr('pin2','stroke','#facc15');
+    attr('pin2','stroke-width','1.5');
+    attr('pin2-line','opacity','1');
+    attr('pin2-label','opacity','1');
+    attr('pin3','fill','rgba(248,113,113,0.2)');
+    attr('pin3','stroke','#f87171');
+    attr('pin3','stroke-width','1.5');
+    attr('pin3-line','opacity','1');
+    attr('pin3-label','opacity','1');
+    attr('twin-footer','opacity','0.6');
+  }
+  if (secs === 140) {
+    show('c1','$180–220');
+    show('c2','$60–90');
+    show('c3','$140–180');
+    show('c4','<span class="badge badge-blue">MSC standard</span>');
+    show('ctotal','$380 – $490');
+  }
+  if (secs === 170) {
+    show('rep-id','VIS-20260622-0047');
+    show('rep-ts','2026-06-22 · 14:32');
+    show('rep-img','24 frames');
+    show('rep-twin','<span class="badge badge-green">Linked</span>');
+    show('rep-ov','<span class="badge badge-blue">None logged</span>');
+    document.getElementById('export-btn').classList.remove('hidden');
+  }
 }, 1000);
 </script>
 </body>
