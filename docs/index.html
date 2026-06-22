@@ -196,7 +196,17 @@ let secs = 0;
 const timerEl = document.getElementById('timer');
 const fill = document.getElementById('tlfill');
 const steps = ['s1','s2','s3','s4','s5','s6'];
+const stepIcons = ['ti-camera','ti-scan','ti-eye','ti-box-model','ti-calculator','ti-file-text'];
 const stepTimes = [10, 30, 60, 100, 140, 170];
+
+function resetDots() {
+  steps.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'tl-dot';
+    el.innerHTML = '<i class="ti ' + stepIcons[i] + '"></i>';
+  });
+}
+resetDots();
 
 setInterval(() => {
   secs++;
@@ -209,12 +219,15 @@ setInterval(() => {
     const el = document.getElementById(id);
     el.className = 'tl-dot';
     if (secs >= stepTimes[i]) {
-      if (i < steps.length-1 && secs >= stepTimes[i+1]) {
+      if (i === steps.length-1 || secs < stepTimes[i+1]) {
+        el.classList.add('active');
+        el.innerHTML = '<i class="ti ' + stepIcons[i] + '"></i>';
+      } else {
         el.classList.add('done');
         el.innerHTML = '<i class="ti ti-check"></i>';
-      } else {
-        el.classList.add('active');
       }
+    } else {
+      el.innerHTML = '<i class="ti ' + stepIcons[i] + '"></i>';
     }
   });
 }, 1000);
