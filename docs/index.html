@@ -1,9 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>VISTA Demo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISTA · Live Gate Inspection</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh;padding:12px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 16px;background:#161b22;border-radius:10px;border:1px solid #30363d;}
+.logo{font-size:17px;font-weight:600;letter-spacing:2px;color:#e6edf3;}
+.logo span{color:#1D9E75;}
+.timer-pill{display:flex;align-items:center;gap:6px;background:#0d1117;border:1px solid #30363d;border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;color:#e6edf3;font-family:monospace;}
+.timer-dot{width:8px;height:8px;border-radius:50%;background:#1D9E75;animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.status-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#0f3d2e;color:#5DCAA5;font-weight:500;}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+.metric{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:10px 14px;}
+.metric-label{font-size:11px;color:#8b949e;margin-bottom:4px;}
+.metric-val{font-size:22px;font-weight:600;color:#e6edf3;}
+.metric-sub{font-size:10px;color:#1D9E75;margin-top:2px;}
+.grid-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 14px;}
+.panel-title{font-size:11px;font-weight:600;color:#8b949e;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.cam-feed{background:#0a1628;border-radius:8px;height:140px;position:relative;overflow:hidden;}
+.scan-line{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,#1D9E75,transparent);animation:scan 2s linear infinite;top:0;}
+@keyframes scan{0%{top:0}100%{top:100%}}
+.cam-label{position:absolute;top:7px;left:10px;font-size:10px;color:#5DCAA5;font-family:monospace;}
+.cam-rec{position:absolute;top:7px;right:10px;display:flex;align-items:center;gap:4px;font-size:10px;color:#f87171;font-family:monospace;}
+.cam-rec-dot{width:6px;height:6px;border-radius:50%;background:#f87171;animation:pulse 1s infinite;}
+.ocr-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #21262d;font-size:12px;}
+.ocr-row:last-child{border-bottom:none;}
+.ocr-label{color:#8b949e;font-size:11px;}
+.ocr-val{font-weight:500;color:#e6edf3;font-family:monospace;font-size:11px;}
+.badge{font-size:10px;padding:2px 8px;border-radius:999px;font-weight:500;}
+.badge-green{background:#0f3d2e;color:#5DCAA5;}
+.badge-amber{background:#3d2a0a;color:#f59e0b;}
+.badge-red{background:#3d0f0f;color:#f87171;}
+.badge-blue{background:#0c2a4a;color:#60a5fa;}
+.twin-panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.twin-area{background:#060e1a;border-radius:8px;height:180px;position:relative;overflow:hidden;}
+.grid-bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #21262d;font-size:12px;}
+.cost-row:last-child{border-bottom:none;}
+.cost-label{color:#8b949e;font-size:11px;}
+.cost-val{font-weight:500;font-size:12px;color:#e6edf3;}
+.cost-total{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #30363d;}
+.export-btn{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid #30363d;background:#21262d;color:#e6edf3;cursor:pointer;margin-top:10px;width:100%;font-family:system-ui,sans-serif;}
+.export-btn:hover{background:#30363d;}
+.timeline{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 16px;}
+.tl-steps{display:flex;align-items:flex-start;justify-content:space-between;position:relative;padding-top:4px;}
+.tl-track{position:absolute;top:17px;left:24px;right:24px;height:2px;background:#21262d;z-index:0;}
+.tl-fill{position:absolute;top:17px;left:24px;height:2px;background:#1D9E75;z-index:1;transition:width 1s;}
+.tl-step{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2;}
+.tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #30363d;background:#161b22;color:#8b949e;}
+.tl-dot.done{background:#1D9E75;border-color:#1D9E75;color:#fff;}
+.tl-dot.active{background:#161b22;border-color:#1D9E75;color:#1D9E75;}
+.tl-label{font-size:10px;color:#8b949e;text-align:center;max-width:56px;}
+.flag-bar{background:#1a1200;border:1px solid #3d2a0a;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:11px;color:#f59e0b;margin-bottom:10px;}
+</style>
 </head>
 <body>
-  <h1>VISTA Frontend is alive</h1>
+
+<div class="topbar">
+  <div class="logo"><span>VISTA</span> · Live Gate Inspection</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="status-pill">Lane 1 · Active</span>
+    <div class="timer-pill">
+      <div class="timer-dot"></div>
+      <span id="timer">00:00</span>
+    </div>
+  </div>
+</div>
+
+<div class="flag-bar">
+  <i class="ti ti-alert-triangle"></i>
+  Low confidence detection on surface #4 — flagged for human review
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-label">Containers today</div><div class="metric-val">47</div><div class="metric-sub">+12% vs avg</div></div>
+  <div class="metric"><div class="metric-label">Avg inspection</div><div class="metric-val">2:38</div><div class="metric-sub">Target &lt;3 min</div></div>
+  <div class="metric"><div class="metric-label">Detection accuracy</div><div class="metric-val">83%</div><div class="metric-sub">Validated pilot</div></div>
+  <div class="metric"><div class="metric-label">Reports exported</div><div class="metric-val">44</div><div class="metric-sub">Auto-generated</div></div>
+</div>
+
+<div class="grid-top">
+  <div class="panel">
+    <div class="panel-title"><i class="ti ti-camera"></i> Live lane feed</div>
+    <div class="cam-feed">
+      <svg width="100%" height="100%" viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="140" fill="#0a1628"/>
+        <line x1="0" y1="0" x2="50" y2="45" stroke="#1D9E75" stroke-width="0.5" opacity="0.3"/>
+        <line x1="300" y1="0" x2="250" y2="45" stroke="#1D9E75" stroke-width="0.5" opacity="0.3"/>
+        <line x1="0" y1="140" x2="50" y2="95" stroke="#1D9E75" stroke-width="0.5" opacity="0.3"/>
+        <line x1="300" y1="140" x2="250" y2="95" stroke="#1D9E75" stroke-width="0.5" opacity="0.3"/>
+        <rect x="50" y="45" width="200" height="50" fill="#0d2137" stroke="#1D9E75" stroke-width="1" rx="2"/>
+        <line x1="116" y1="45" x2="116" y2="95" stroke="#1D9E75" stroke-width="0.4" opacity="0.4"/>
+        <line x1="182" y1="45" x2="182" y2="95" stroke="#1D9E75" stroke-width="0.4" opacity="0.4"/>
+        <rect x="62" y="54" width="32" height="20" fill="none" stroke="#facc15" stroke-width="1.2" rx="1"/>
+        <text x="62" y="51" fill="#facc15" font-size="8" font-family="monospace">dent 91%</text>
+        <rect x="160" y="58" width="28" height="18" fill="none" stroke="#f87171" stroke-width="1.2" rx="1"/>
+        <text x="155" y="55" fill="#f87171" font-size="8" font-family="monospace">rust 78%</text>
+        <text x="150" y="110" fill="#1D9E75" font-size="8" font-family="monospace" text-anchor="middle" opacity="0.6">TCKU 305842 6 · CAM-01</text>
+      </svg>
+      <div class="scan-line"></div>
+      <div class="cam-label">CAM-01 · SIDE-L</div>
+      <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><i class="ti ti-scan"></i> Detection & identification</div>
+    <div class="ocr-row"><span class="ocr-label">BIC code</span><span class="ocr-val">TCKU 305842 6</span></div>
+    <div class="ocr-row"><span class="ocr-label">Type / size</span><span class="ocr-val">20ft · Dry general</span></div>
+    <div class="ocr-row"><span class="ocr-label">Condition grade</span><span class="badge badge-amber">Grade B</span></div>
+    <div class="ocr-row"><span class="ocr-label">Damage #1</span><span class="badge badge-red">Dent · 91%</span></div>
+    <div class="ocr-row"><span class="ocr-label">Damage #2</span><span class="badge badge-amber">Scratch · 85%</span></div>
+    <div class="ocr-row"><span class="ocr-label">Damage #3</span><span class="badge badge-red">Corrosion · 78%</span></div>
+    <div class="ocr-row"><span class="ocr-label">Low conf. flag</span><span class="badge badge-blue">Human review ×1</span></div>
+  </div>
+</div>
+
+<div class="twin-panel">
+  <div class="panel-title"><i class="ti ti-box-model"></i> 3D digital twin · damage map</div>
+  <div class="twin-area">
+    <svg width="100%" height="100%" viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg">
+      <rect width="560" height="180" fill="#060e1a"/>
+      <g transform="translate(280,90)">
+        <rect x="-180" y="-42" width="360" height="84" fill="#0d2137" stroke="#1D9E75" stroke-width="1" rx="3"/>
+        <rect x="-180" y="-42" width="360" height="12" fill="#0d3a58" stroke="#1D9E75" stroke-width="0.5"/>
+        <line x1="-120" y1="-42" x2="-120" y2="42" stroke="#1D9E75" stroke-width="0.4" opacity="0.3"/>
+        <line x1="-60" y1="-42" x2="-60" y2="42" stroke="#1D9E75" stroke-width="0.4" opacity="0.3"/>
+        <line x1="0" y1="-42" x2="0" y2="42" stroke="#1D9E75" stroke-width="0.4" opacity="0.3"/>
+        <line x1="60" y1="-42" x2="60" y2="42" stroke="#1D9E75" stroke-width="0.4" opacity="0.3"/>
+        <line x1="120" y1="-42" x2="120" y2="42" stroke="#1D9E75" stroke-width="0.4" opacity="0.3"/>
+        <polygon points="-180,-42 -210,-22 -210,62 -180,42" fill="#0a2030" stroke="#1D9E75" stroke-width="0.8"/>
+        <polygon points="180,-42 210,-22 210,62 180,42" fill="#0a2030" stroke="#1D9E75" stroke-width="0.8"/>
+        <circle cx="-100" cy="10" r="9" fill="rgba(248,113,113,0.2)" stroke="#f87171" stroke-width="1.5"/>
+        <line x1="-100" y1="-30" x2="-100" y2="1" stroke="#f87171" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="-100" y="-34" fill="#f87171" font-size="10" font-family="monospace" text-anchor="middle">① dent</text>
+        <circle cx="50" cy="-22" r="9" fill="rgba(250,204,21,0.15)" stroke="#facc15" stroke-width="1.5"/>
+        <line x1="50" y1="-13" x2="50" y2="-34" stroke="#facc15" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="50" y="-38" fill="#facc15" font-size="10" font-family="monospace" text-anchor="middle">② scratch</text>
+        <circle cx="155" cy="22" r="9" fill="rgba(248,113,113,0.2)" stroke="#f87171" stroke-width="1.5"/>
+        <line x1="155" y1="31" x2="155" y2="52" stroke="#f87171" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="155" y="62" fill="#f87171" font-size="10" font-family="monospace" text-anchor="middle">③ corrosion</text>
+        <text x="0" y="72" fill="#5DCAA5" font-size="9" font-family="monospace" text-anchor="middle" opacity="0.6">TCKU 305842 6 · multi-view reconstruction · 3 defects pinned</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<div class="grid-bottom">
+  <div class="panel">
+    <div class="panel-title"><i class="ti ti-calculator"></i> Repair estimation · IICL rules</div>
+    <div class="cost-row"><span class="cost-label">① Dent &gt;2cm → Cat B repair</span><span class="cost-val">$180–220</span></div>
+    <div class="cost-row"><span class="cost-label">② Scratch → surface treatment</span><span class="cost-val">$60–90</span></div>
+    <div class="cost-row"><span class="cost-label">③ Corrosion → patch + coat</span><span class="cost-val">$140–180</span></div>
+    <div class="cost-row"><span class="cost-label">Shipping-line config</span><span class="badge badge-blue">MSC standard</span></div>
+    <div class="cost-total">
+      <span style="font-size:12px;color:#8b949e;">Total estimate</span>
+      <span style="font-size:16px;font-weight:600;color:#e6edf3;">$380 – $490</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><i class="ti ti-file-text"></i> Audit report</div>
+    <div class="ocr-row"><span class="ocr-label">Inspection ID</span><span class="ocr-val">VIS-20260622-0047</span></div>
+    <div class="ocr-row"><span class="ocr-label">Timestamp</span><span class="ocr-val">2026-06-22 · 14:32</span></div>
+    <div class="ocr-row"><span class="ocr-label">Images captured</span><span class="ocr-val">24 frames</span></div>
+    <div class="ocr-row"><span class="ocr-label">3D twin</span><span class="badge badge-green">Linked</span></div>
+    <div class="ocr-row"><span class="ocr-label">Human override</span><span class="badge badge-blue">None logged</span></div>
+    <button class="export-btn" onclick="alert('Report VIS-20260622-0047 exported successfully.')">
+      <i class="ti ti-download"></i> Export PDF report
+    </button>
+  </div>
+</div>
+
+<div class="timeline">
+  <div class="tl-steps">
+    <div class="tl-track"></div>
+    <div class="tl-fill" id="tlfill" style="width:0%"></div>
+    <div class="tl-step"><div class="tl-dot" id="s1"><i class="ti ti-camera"></i></div><div class="tl-label">Capture</div></div>
+    <div class="tl-step"><div class="tl-dot" id="s2"><i class="ti ti-scan"></i></div><div class="tl-label">Identify</div></div>
+    <div class="tl-step"><div class="tl-dot" id="s3"><i class="ti ti-eye"></i></div><div class="tl-label">Detect</div></div>
+    <div class="tl-step"><div class="tl-dot" id="s4"><i class="ti ti-box-model"></i></div><div class="tl-label">3D twin</div></div>
+    <div class="tl-step"><div class="tl-dot" id="s5"><i class="ti ti-calculator"></i></div><div class="tl-label">Estimate</div></div>
+    <div class="tl-step"><div class="tl-dot" id="s6"><i class="ti ti-file-text"></i></div><div class="tl-label">Report</div></div>
+  </div>
+</div>
+
+<script>
+let secs = 0;
+const timerEl = document.getElementById('timer');
+const fill = document.getElementById('tlfill');
+const steps = ['s1','s2','s3','s4','s5','s6'];
+const stepTimes = [10, 30, 60, 100, 140, 170];
+
+setInterval(() => {
+  secs++;
+  const m = Math.floor(secs/60).toString().padStart(2,'0');
+  const s = (secs%60).toString().padStart(2,'0');
+  timerEl.textContent = m+':'+s;
+  const pct = Math.min((secs/180)*100, 100);
+  fill.style.width = pct + '%';
+  steps.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'tl-dot';
+    if (secs >= stepTimes[i]) {
+      if (i < steps.length-1 && secs >= stepTimes[i+1]) {
+        el.classList.add('done');
+        el.innerHTML = '<i class="ti ti-check"></i>';
+      } else {
+        el.classList.add('active');
+      }
+    }
+  });
+}, 1000);
+</script>
 </body>
 </html>
