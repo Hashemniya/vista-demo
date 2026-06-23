@@ -286,8 +286,20 @@ makeSideWall(-D/2);
 
 // end walls
 function makeEnd(x){
-  var m=new THREE.MeshPhongMaterial({color:0x0a2030});
-  root.add(new THREE.Mesh(new THREE.BoxGeometry(0.05,H,D),m)).position.set(x,0,0);
+  var m=new THREE.MeshPhongMaterial({color:0x0a2030,side:THREE.DoubleSide});
+  var mesh=new THREE.Mesh(new THREE.BoxGeometry(0.05,H,D),m);
+  mesh.position.set(x,0,0);
+  root.add(mesh);
+  // horizontal ribs
+  [-0.6,-0.2,0.2,0.6].forEach(function(yi){
+    var r=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.035,D),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.4}));
+    r.position.set(x,yi,0); root.add(r);
+  });
+  // vertical ribs
+  [-0.8,0,0.8].forEach(function(zi){
+    var r=new THREE.Mesh(new THREE.BoxGeometry(0.05,H,0.04),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.3}));
+    r.position.set(x,0,zi); root.add(r);
+  });
 }
 makeEnd(-W/2); makeEnd(W/2);
 
