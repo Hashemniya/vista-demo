@@ -40,8 +40,9 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .badge-red{background:#3d0f0f;color:#f87171;}
 .badge-blue{background:#0c2a4a;color:#60a5fa;}
 .badge-orange{background:#3d1f0a;color:#fb923c;}
+.badge-lime{background:#0f2e1a;color:#4ade80;}
 .twin-panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 14px;margin-bottom:10px;}
-.twin-area{background:#060e1a;border-radius:8px;height:280px;position:relative;overflow:hidden;}
+.twin-area{background:#060e1a;border-radius:8px;height:300px;position:relative;overflow:hidden;}
 #twin-canvas{width:100%;height:100%;display:block;cursor:grab;}
 #twin-canvas:active{cursor:grabbing;}
 .twin-hint{position:absolute;bottom:8px;right:10px;font-size:9px;color:#5DCAA5;font-family:monospace;opacity:0.7;display:none;}
@@ -89,46 +90,33 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 </div>
 
 <div class="grid-top">
-  <!-- LIVE LANE FEED -->
   <div class="panel">
     <div class="panel-title"><i class="ti ti-camera"></i> Live lane feed</div>
     <div class="cam-feed">
       <svg width="100%" height="100%" viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
         <rect width="300" height="160" fill="#0a1628"/>
-        <!-- perspective lines -->
         <line x1="0" y1="0" x2="45" y2="38" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
         <line x1="300" y1="0" x2="255" y2="38" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
         <line x1="0" y1="160" x2="45" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
         <line x1="300" y1="160" x2="255" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
-        <!-- container body: x=45..255, y=38..122 -->
         <rect x="45" y="38" width="210" height="84" fill="#0d2137" stroke="#1D9E75" stroke-width="1" rx="2"/>
-        <!-- ceiling stripe -->
-        <rect x="45" y="38" width="210" height="10" fill="#1a3a4a" stroke="none"/>
-        <!-- floor stripe -->
-        <rect x="45" y="114" width="210" height="8" fill="#0a1a0a" stroke="none"/>
-        <!-- vertical ribs at x=45+52=97, 149, 201 -->
+        <rect x="45" y="38" width="210" height="10" fill="#1a3a4a"/>
+        <rect x="45" y="114" width="210" height="8" fill="#0a1a0a"/>
         <line x1="97"  y1="38" x2="97"  y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
         <line x1="149" y1="38" x2="149" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
         <line x1="201" y1="38" x2="201" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
-
-        <!-- DAMAGE 1: Dent — left panel, mid-height: cx~75, cy~75 -->
-        <!-- bbox: x=58,y=58 w=38,h=30 → center 77,73 -->
-        <rect id="bbox1" x="58" y="58" width="38" height="30" fill="rgba(250,204,21,0.07)" stroke="#facc15" stroke-width="1.3" rx="1" opacity="0"/>
-        <text id="bl1a" x="58" y="55" fill="#facc15" font-size="8" font-family="monospace" opacity="0">Dent</text>
-        <text id="bl1b" x="58" y="55" fill="#facc15" font-size="8" font-family="monospace" opacity="0">Dent 91%</text>
-
-        <!-- DAMAGE 2: Rust — right panel, lower: cx~220, cy~95 -->
-        <!-- bbox: x=203,y=82 w=36,h=26 → center 221,95 -->
+        <!-- Dent: left panel mid -->
+        <rect id="bbox1" x="58" y="58" width="38" height="30" fill="rgba(74,222,128,0.07)" stroke="#4ade80" stroke-width="1.3" rx="1" opacity="0"/>
+        <text id="bl1a" x="58" y="55" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">Dent</text>
+        <text id="bl1b" x="58" y="55" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">Dent 91%</text>
+        <!-- Rust: right panel lower -->
         <rect id="bbox2" x="203" y="82" width="36" height="26" fill="rgba(248,113,113,0.07)" stroke="#f87171" stroke-width="1.3" rx="1" opacity="0"/>
         <text id="bl2a" x="203" y="79" fill="#f87171" font-size="8" font-family="monospace" opacity="0">Rust</text>
         <text id="bl2b" x="203" y="79" fill="#f87171" font-size="8" font-family="monospace" opacity="0">Rust 78%</text>
-
-        <!-- DAMAGE 3: Scratch — center panel, upper: cx~149, cy~58 -->
-        <!-- bbox: x=130,y=46 w=38,h=24 → center 149,58 -->
+        <!-- Scratch: center upper -->
         <rect id="bbox3" x="130" y="46" width="38" height="24" fill="rgba(251,146,60,0.07)" stroke="#fb923c" stroke-width="1.3" rx="1" opacity="0"/>
         <text id="bl3a" x="130" y="43" fill="#fb923c" font-size="8" font-family="monospace" opacity="0">Scratch</text>
         <text id="bl3b" x="130" y="43" fill="#fb923c" font-size="8" font-family="monospace" opacity="0">Scratch 85%</text>
-
         <text x="150" y="148" fill="#1D9E75" font-size="8" font-family="monospace" text-anchor="middle" opacity="0.5">TCKU 305842 6 · CAM-01 SIDE-L</text>
       </svg>
       <div class="scan-line" id="scan-line"></div>
@@ -137,7 +125,6 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
     </div>
   </div>
 
-  <!-- DETECTION & IDENTIFICATION -->
   <div class="panel">
     <div class="panel-title"><i class="ti ti-scan"></i> Detection & identification</div>
     <div id="detect-waiting" class="waiting">Waiting for capture...</div>
@@ -153,7 +140,6 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   </div>
 </div>
 
-<!-- 3D TWIN -->
 <div class="twin-panel">
   <div class="panel-title"><i class="ti ti-box-model"></i> 3D digital twin · damage map
     <span id="twin-tag" style="font-size:10px;color:#1D9E75;font-weight:400;margin-left:6px;font-family:monospace;"></span>
@@ -164,15 +150,14 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   </div>
 </div>
 
-<!-- REPAIR + REPORT -->
 <div class="grid-bottom">
   <div class="panel">
     <div class="panel-title"><i class="ti ti-calculator"></i> Repair estimation · IICL rules</div>
     <div id="cost-waiting" class="waiting">Waiting for AI processing...</div>
     <div id="cost-rows" style="display:none">
-      <div class="cost-row"><span class="cost-label">① Dent &gt;2cm → Cat B repair</span><span class="cost-val" id="c1">$180–220</span></div>
-      <div class="cost-row"><span class="cost-label">② Rust → patch + recoat</span><span class="cost-val" id="c2">$140–180</span></div>
-      <div class="cost-row"><span class="cost-label">③ Scratch → surface treatment</span><span class="cost-val" id="c3">$60–90</span></div>
+      <div class="cost-row"><span class="cost-label">① Dent &gt;2cm → Cat B repair</span><span class="cost-val">$180–220</span></div>
+      <div class="cost-row"><span class="cost-label">② Rust → patch + recoat</span><span class="cost-val">$140–180</span></div>
+      <div class="cost-row"><span class="cost-label">③ Scratch → surface treatment</span><span class="cost-val">$60–90</span></div>
       <div class="cost-row"><span class="cost-label">Shipping-line config</span><span class="ocr-val"><span class="badge badge-blue">MSC standard</span></span></div>
       <div class="cost-total">
         <span style="font-size:12px;color:#8b949e;">Total estimate</span>
@@ -195,7 +180,6 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   </div>
 </div>
 
-<!-- TIMELINE -->
 <div class="timeline">
   <div class="tl-steps">
     <div class="tl-track"></div>
@@ -211,333 +195,227 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-// TIMING
-var T_GATE    = 0;
-var T_CAPTURE = 10;   // capture starts at 10s
-var T_DETECT  = 50;   // capture ends / damages appear (no %) at 50s
-var T_AI      = 110;  // AI done: % appears at 110s
-var T_TWIN    = 140;  // 3D twin built at 140s
-var T_REPORT  = 140;  // report + cost appear together at 140s
-var TOTAL     = 140;
+var T_CAPTURE=10, T_DETECT=50, T_AI=110, T_TWIN=140, TOTAL=140;
+var secs=0;
+var timerEl=document.getElementById('timer');
+var fillEl=document.getElementById('tlfill');
+var phasePill=document.getElementById('phase-pill');
+var steps=['s1','s2','s3','s4','s5'];
+var sicons=['ti-gate','ti-camera','ti-cpu','ti-box-model','ti-file-text'];
+var stepStart=[0,T_CAPTURE,T_DETECT,T_AI,T_TWIN];
 
-var secs = 0;
-var timerEl   = document.getElementById('timer');
-var fillEl    = document.getElementById('tlfill');
-var phasePill = document.getElementById('phase-pill');
+function svgShow(id){var e=document.getElementById(id);if(e)e.setAttribute('opacity','1');}
+function svgHide(id){var e=document.getElementById(id);if(e)e.setAttribute('opacity','0');}
+function show(id,html){var e=document.getElementById(id);if(e)e.innerHTML=html;}
+function display(id,v){var e=document.getElementById(id);if(e)e.style.display=v;}
 
-var steps     = ['s1','s2','s3','s4','s5'];
-var sicons    = ['ti-gate','ti-camera','ti-cpu','ti-box-model','ti-file-text'];
-var stepStart = [T_GATE, T_CAPTURE, T_DETECT, T_AI, T_TWIN];
-
-function svgShow(id){ var e=document.getElementById(id); if(e) e.setAttribute('opacity','1'); }
-function svgHide(id){ var e=document.getElementById(id); if(e) e.setAttribute('opacity','0'); }
-function show(id,html){ var e=document.getElementById(id); if(e) e.innerHTML=html; }
-function display(id,v){ var e=document.getElementById(id); if(e) e.style.display=v; }
-
-// ── THREE.JS ──────────────────────────────────────────────────
-var canvas   = document.getElementById('twin-canvas');
-var renderer = new THREE.WebGLRenderer({canvas:canvas,antialias:true});
+// THREE.JS
+var canvas=document.getElementById('twin-canvas');
+var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 renderer.setClearColor(0x060e1a,1);
-
-var scene  = new THREE.Scene();
-var W=7, H=1.8, D=2.4;
-
-var camDist = 7;
-var camera = new THREE.PerspectiveCamera(38,2,0.1,200);
-camera.position.set(camDist,3,camDist);
+var scene=new THREE.Scene();
+var W=7,H=1.8,D=2.4;
+var camera=new THREE.PerspectiveCamera(34,2,0.1,200);
+camera.position.set(5,2.5,5);
 camera.lookAt(0,0,0);
-
 scene.add(new THREE.AmbientLight(0xffffff,0.55));
-var dl=new THREE.DirectionalLight(0x5DCAA5,1.1); dl.position.set(8,12,8); scene.add(dl);
-var dl2=new THREE.DirectionalLight(0x4488ff,0.3); dl2.position.set(-8,-5,-8); scene.add(dl2);
-
-var root = new THREE.Group();
-scene.add(root);
+var dl=new THREE.DirectionalLight(0x5DCAA5,1.1);dl.position.set(8,12,8);scene.add(dl);
+var dl2=new THREE.DirectionalLight(0x4488ff,0.3);dl2.position.set(-8,-5,-8);scene.add(dl2);
+var root=new THREE.Group();scene.add(root);
 
 // floor
-var floorM=new THREE.MeshPhongMaterial({color:0x111a11});
-var floorMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),floorM);
-floorMesh.position.y=-H/2+0.035; root.add(floorMesh);
-
+var floorMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),new THREE.MeshPhongMaterial({color:0x111a11}));
+floorMesh.position.y=-H/2+0.035;root.add(floorMesh);
 // ceiling
-var ceilM=new THREE.MeshPhongMaterial({color:0x3a5a6a});
-var ceilMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),ceilM);
-ceilMesh.position.y=H/2-0.035; root.add(ceilMesh);
+var ceilMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),new THREE.MeshPhongMaterial({color:0x3a5a6a}));
+ceilMesh.position.y=H/2-0.035;root.add(ceilMesh);
 
-// side walls (front face = +Z, back face = -Z)
+// side walls
 function makeSideWall(z){
-  var m=new THREE.MeshPhongMaterial({color:0x0d2a40,side:THREE.FrontSide});
-  var mesh=new THREE.Mesh(new THREE.BoxGeometry(W,H,0.05),m);
-  mesh.position.set(0,0,z); root.add(mesh);
-  // horizontal ribs
+  root.add(new THREE.Mesh(new THREE.BoxGeometry(W,H,0.05),new THREE.MeshPhongMaterial({color:0x0d2a40,side:THREE.DoubleSide}))).position.set(0,0,z);
   [-0.6,-0.2,0.2,0.6].forEach(function(yi){
     var r=new THREE.Mesh(new THREE.BoxGeometry(W,0.035,0.05),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.45}));
-    r.position.set(0,yi,z+(z>0?0.04:-0.04)); root.add(r);
+    r.position.set(0,yi,z+(z>0?0.04:-0.04));root.add(r);
   });
-  // vertical ribs
   [-3,-2,-1,0,1,2,3].forEach(function(xi){
     var r=new THREE.Mesh(new THREE.BoxGeometry(0.04,H,0.04),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.3}));
-    r.position.set(xi,0,z+(z>0?0.04:-0.04)); root.add(r);
+    r.position.set(xi,0,z+(z>0?0.04:-0.04));root.add(r);
   });
 }
-makeSideWall(D/2);
-makeSideWall(-D/2);
+makeSideWall(D/2);makeSideWall(-D/2);
 
-// end walls
+// end walls — DoubleSide so visible from outside
 function makeEnd(x){
   var m=new THREE.MeshPhongMaterial({color:0x0a2030,side:THREE.DoubleSide});
   var mesh=new THREE.Mesh(new THREE.BoxGeometry(0.05,H,D),m);
-  mesh.position.set(x,0,0);
-  root.add(mesh);
-  // horizontal ribs
+  mesh.position.set(x,0,0);root.add(mesh);
   [-0.6,-0.2,0.2,0.6].forEach(function(yi){
     var r=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.035,D),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.4}));
-    r.position.set(x,yi,0); root.add(r);
+    r.position.set(x,yi,0);root.add(r);
   });
-  // vertical ribs
   [-0.8,0,0.8].forEach(function(zi){
     var r=new THREE.Mesh(new THREE.BoxGeometry(0.05,H,0.04),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.3}));
-    r.position.set(x,0,zi); root.add(r);
+    r.position.set(x,0,zi);root.add(r);
   });
 }
-makeEnd(-W/2); makeEnd(W/2);
+makeEnd(-W/2);makeEnd(W/2);
 
 // edges
-root.add(new THREE.LineSegments(
-  new THREE.EdgesGeometry(new THREE.BoxGeometry(W,H,D)),
-  new THREE.LineBasicMaterial({color:0x1D9E75})
-));
+root.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W,H,D)),new THREE.LineBasicMaterial({color:0x1D9E75})));
 
-// ── DAMAGE PINS with canvas sprite labels ────────────────────
-// All 3 damages are on the FRONT side wall (+Z face)
-// Positions mapped to match bbox centers in the SVG:
-//   bbox1 (Dent):    SVG center ~(77,73) → left panel, mid  → x=-2.0, y=0.0
-//   bbox2 (Rust):    SVG center ~(221,95) → right panel, low → x=2.2,  y=-0.35
-//   bbox3 (Scratch): SVG center ~(149,58) → center panel, up → x=0.1,  y=0.45
-
-var damages = [
-  {x:-2.0, y:0.0,   z:D/2, color:0xfacc15, name:'Dent',    pct:'91%', hex:'#facc15'},
-  {x: 2.2, y:-0.35, z:D/2, color:0xf87171, name:'Rust',    pct:'78%', hex:'#f87171'},
-  {x: 0.1, y:0.45,  z:D/2, color:0xfb923c, name:'Scratch', pct:'85%', hex:'#fb923c'},
+// damage pins — positions matched to SVG bboxes
+var damages=[
+  {x:-2.0,y:0.0, z:D/2,color:0x4ade80,name:'Dent',   pct:'91%',hex:'#4ade80'},
+  {x:2.2, y:-0.35,z:D/2,color:0xf87171,name:'Rust',   pct:'78%',hex:'#f87171'},
+  {x:0.1, y:0.45, z:D/2,color:0xfb923c,name:'Scratch',pct:'85%',hex:'#fb923c'},
 ];
+var pinGroup=new THREE.Group();root.add(pinGroup);pinGroup.visible=false;
+var sprites=[];
 
-var pinGroup = new THREE.Group();
-root.add(pinGroup);
-pinGroup.visible = false;
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
 
-var sprites = [];
-
-function makeLabel(name, pct, hex, withPct){
-  var c=document.createElement('canvas');
-  c.width=200; c.height=56;
+function makeLabel(name,pct,hex,withPct){
+  var c=document.createElement('canvas');c.width=200;c.height=56;
   var ctx=c.getContext('2d');
   ctx.clearRect(0,0,200,56);
-  ctx.fillStyle='rgba(6,14,26,0.82)';
-  roundRect(ctx,0,0,200,56,8);
-  ctx.fill();
-  ctx.strokeStyle=hex; ctx.lineWidth=2;
-  roundRect(ctx,0,0,200,56,8);
-  ctx.stroke();
-  ctx.fillStyle=hex;
-  ctx.font='bold 22px monospace';
+  ctx.fillStyle='rgba(6,14,26,0.85)';roundRect(ctx,0,0,200,56,8);ctx.fill();
+  ctx.strokeStyle=hex;ctx.lineWidth=2;roundRect(ctx,0,0,200,56,8);ctx.stroke();
+  ctx.fillStyle=hex;ctx.font='bold 22px monospace';
   ctx.fillText(name+(withPct?' · '+pct:''),12,36);
   return c;
 }
 
-function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
-  ctx.closePath();
-}
-
 damages.forEach(function(d){
-  // sphere pin
-  var sg=new THREE.SphereGeometry(0.13,20,20);
-  var sm=new THREE.MeshPhongMaterial({color:d.color,emissive:d.color,emissiveIntensity:0.7});
-  var sp=new THREE.Mesh(sg,sm);
-  sp.position.set(d.x,d.y,d.z); pinGroup.add(sp);
-  // halo
-  var hg=new THREE.SphereGeometry(0.24,20,20);
-  var hm=new THREE.MeshPhongMaterial({color:d.color,transparent:true,opacity:0.18,side:THREE.DoubleSide});
-  var hp=new THREE.Mesh(hg,hm);
-  hp.position.set(d.x,d.y,d.z); pinGroup.add(hp);
-  // sprite label (no pct initially)
+  var sp=new THREE.Mesh(new THREE.SphereGeometry(0.13,20,20),new THREE.MeshPhongMaterial({color:d.color,emissive:d.color,emissiveIntensity:0.7}));
+  sp.position.set(d.x,d.y,d.z);pinGroup.add(sp);
+  var hp=new THREE.Mesh(new THREE.SphereGeometry(0.24,20,20),new THREE.MeshPhongMaterial({color:d.color,transparent:true,opacity:0.18,side:THREE.DoubleSide}));
+  hp.position.set(d.x,d.y,d.z);pinGroup.add(hp);
   var tex=new THREE.CanvasTexture(makeLabel(d.name,'',d.hex,false));
-  var mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false});
-  var sprite=new THREE.Sprite(mat);
-  sprite.scale.set(1.4,0.4,1);
-  sprite.position.set(d.x, d.y+0.55, d.z+0.1);
+  var sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+  sprite.scale.set(1.5,0.42,1);
+  sprite.position.set(d.x,d.y+0.6,d.z+0.1);
   pinGroup.add(sprite);
-  sprites.push({sprite:sprite, d:d});
+  sprites.push({sprite:sprite,d:d});
 });
 
 function updateSprites(withPct){
   sprites.forEach(function(s){
     var tex=new THREE.CanvasTexture(makeLabel(s.d.name,s.d.pct,s.d.hex,withPct));
-    s.sprite.material.map=tex;
-    s.sprite.material.needsUpdate=true;
+    s.sprite.material.map=tex;s.sprite.material.needsUpdate=true;
   });
 }
 
-// resize
 function resizeTwin(){
-  var w=canvas.parentElement.clientWidth;
-  var h=canvas.parentElement.clientHeight;
-  renderer.setSize(w,h,false);
-  camera.aspect=w/h;
-  camera.updateProjectionMatrix();
+  var w=canvas.parentElement.clientWidth,h=canvas.parentElement.clientHeight;
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
 }
-resizeTwin();
-window.addEventListener('resize',resizeTwin);
+resizeTwin();window.addEventListener('resize',resizeTwin);
 
-// drag
 var drag=false,px=0,py=0;
 canvas.addEventListener('mousedown',function(e){drag=true;px=e.clientX;py=e.clientY;});
 window.addEventListener('mouseup',function(){drag=false;});
-window.addEventListener('mousemove',function(e){
-  if(!drag)return;
-  root.rotation.y+=(e.clientX-px)*0.012;
-  root.rotation.x+=(e.clientY-py)*0.008;
-  px=e.clientX;py=e.clientY;
-});
+window.addEventListener('mousemove',function(e){if(!drag)return;root.rotation.y+=(e.clientX-px)*0.012;root.rotation.x+=(e.clientY-py)*0.008;px=e.clientX;py=e.clientY;});
 canvas.addEventListener('touchstart',function(e){drag=true;px=e.touches[0].clientX;py=e.touches[0].clientY;},{passive:true});
 window.addEventListener('touchend',function(){drag=false;});
-window.addEventListener('touchmove',function(e){
-  if(!drag)return;
-  root.rotation.y+=(e.touches[0].clientX-px)*0.012;
-  root.rotation.x+=(e.touches[0].clientY-py)*0.008;
-  px=e.touches[0].clientX;py=e.touches[0].clientY;
-},{passive:true});
+window.addEventListener('touchmove',function(e){if(!drag)return;root.rotation.y+=(e.touches[0].clientX-px)*0.012;root.rotation.x+=(e.touches[0].clientY-py)*0.008;px=e.touches[0].clientX;py=e.touches[0].clientY;},{passive:true});
 
-(function animate(){
-  requestAnimationFrame(animate);
-  if(!drag) root.rotation.y+=0.004;
-  renderer.render(scene,camera);
-})();
+(function animate(){requestAnimationFrame(animate);if(!drag)root.rotation.y+=0.004;renderer.render(scene,camera);})();
 
-// ── PDF ──────────────────────────────────────────────────────
+// PDF
 function exportPDF(){
   var doc=new jspdf.jsPDF();
-  doc.setFillColor(13,17,23); doc.rect(0,0,210,297,'F');
-  doc.setTextColor(29,158,117); doc.setFontSize(20); doc.setFont('helvetica','bold');
-  doc.text('VISTA',14,20);
-  doc.setTextColor(230,237,243); doc.setFontSize(13);
-  doc.text('Gate Inspection Report',42,20);
-  doc.setFontSize(9); doc.setTextColor(139,148,158);
-  doc.text('Automated Container Inspection System — GWC Depot · Lane 1',14,28);
-  doc.setDrawColor(48,54,61); doc.line(14,32,196,32);
+  doc.setFillColor(13,17,23);doc.rect(0,0,210,297,'F');
+  doc.setTextColor(29,158,117);doc.setFontSize(20);doc.setFont('helvetica','bold');doc.text('VISTA',14,20);
+  doc.setTextColor(230,237,243);doc.setFontSize(13);doc.text('Gate Inspection Report',42,20);
+  doc.setFontSize(9);doc.setTextColor(139,148,158);doc.text('Automated Container Inspection System — GWC Depot · Lane 1',14,28);
+  doc.setDrawColor(48,54,61);doc.line(14,32,196,32);
   var y=42;
   function sec(t){doc.setTextColor(139,148,158);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(t,14,y);doc.line(14,y+2,196,y+2);y+=10;}
   function row(l,v){doc.setFont('helvetica','normal');doc.setTextColor(139,148,158);doc.setFontSize(9);doc.text(l,14,y);doc.setTextColor(230,237,243);doc.text(v,90,y);y+=8;}
   sec('INSPECTION DETAILS');
-  row('Inspection ID','VIS-20260622-0047');
-  row('Timestamp','2026-06-22 · 14:32 GST');
-  row('Lane','Lane 1 · GWC Depot');
-  row('BIC Code','TCKU 305842 6');
-  row('Container type','20ft · Dry general');
-  row('Condition grade','Grade B');
-  row('Images captured','24 frames (multi-angle)');
-  row('3D twin status','Linked — 3 defects pinned');
+  row('Inspection ID','VIS-20260622-0047');row('Timestamp','2026-06-22 · 14:32 GST');
+  row('Lane','Lane 1 · GWC Depot');row('BIC Code','TCKU 305842 6');
+  row('Container type','20ft · Dry general');row('Condition grade','Grade B');
+  row('Images captured','24 frames (multi-angle)');row('3D twin status','Linked — 3 defects pinned');
   row('Human override','None logged');
-  y+=4; sec('DAMAGE DETECTED');
+  y+=4;sec('DAMAGE DETECTED');
   ['#','Type','Location','Conf.','IICL Action','Est. Cost'].forEach(function(h,i){doc.setTextColor(139,148,158);doc.setFontSize(8);doc.text(h,[14,26,58,108,128,170][i],y);});
-  y+=6; doc.line(14,y,196,y); y+=6;
+  y+=6;doc.line(14,y,196,y);y+=6;
   [['#1','Dent','Front-left side panel','91%','Cat B repair','$180–220'],
    ['#2','Rust','Right side panel','78%','Patch + recoat','$140–180'],
    ['#3','Scratch','Center upper panel','85%','Surface treatment','$60–90']
   ].forEach(function(d){doc.setTextColor(230,237,243);doc.setFontSize(9);d.forEach(function(v,i){doc.text(v,[14,26,58,108,128,170][i],y);});y+=8;});
-  y+=4; doc.line(14,y,196,y); y+=8;
-  doc.setTextColor(29,158,117); doc.setFontSize(11);
-  doc.text('Total repair estimate: $380 – $490',14,y);
-  doc.setTextColor(139,148,158); doc.setFontSize(8);
-  doc.text('Based on IICL rules · MSC shipping-line configuration',14,y+7);
-  y+=18; sec('IICL RULE REFERENCES');
+  y+=4;doc.line(14,y,196,y);y+=8;
+  doc.setTextColor(29,158,117);doc.setFontSize(11);doc.text('Total repair estimate: $380 – $490',14,y);
+  doc.setTextColor(139,148,158);doc.setFontSize(8);doc.text('Based on IICL rules · MSC shipping-line configuration',14,y+7);
+  y+=18;sec('IICL RULE REFERENCES');
   ['Dent >2cm on structural panel → Category B repair (IICL §4.2.1)',
    'Rust / corrosion <50% wall thickness → patch and recoat (IICL §4.3.2)',
    'Surface scratch without structural compromise → surface treatment (IICL §4.1.3)'
   ].forEach(function(r){doc.setTextColor(230,237,243);doc.setFontSize(9);doc.text('· '+r,14,y);y+=8;});
-  y+=6; doc.setDrawColor(48,54,61); doc.line(14,y,196,y); y+=8;
-  doc.setTextColor(139,148,158); doc.setFontSize(8);
+  y+=6;doc.setDrawColor(48,54,61);doc.line(14,y,196,y);y+=8;
+  doc.setTextColor(139,148,158);doc.setFontSize(8);
   doc.text('Generated by VISTA · Sensifai · '+new Date().toISOString().slice(0,10),14,y);
   doc.text('This report constitutes an audit-ready inspection record.',14,y+6);
   doc.save('VISTA-Report-VIS-20260622-0047.pdf');
 }
 
-// ── MAIN TIMER ───────────────────────────────────────────────
+// TIMER
 setInterval(function(){
   secs++;
-  var m=Math.floor(secs/60).toString().padStart(2,'0');
-  var s=(secs%60).toString().padStart(2,'0');
+  var m=Math.floor(secs/60).toString().padStart(2,'0'),s=(secs%60).toString().padStart(2,'0');
   timerEl.textContent=m+':'+s;
   fillEl.style.width=Math.min((secs/TOTAL)*100,100)+'%';
-
-  // phase pill
-  if(secs<T_CAPTURE)      phasePill.textContent='Gate Entry';
-  else if(secs<T_DETECT)  phasePill.textContent='Capture';
-  else if(secs<T_AI)      phasePill.textContent='AI Processing';
-  else if(secs<T_TWIN)    phasePill.textContent='3D Twin';
-  else                    phasePill.textContent='Report Ready';
-
-  // timeline dots
+  if(secs<T_CAPTURE)phasePill.textContent='Gate Entry';
+  else if(secs<T_DETECT)phasePill.textContent='Capture';
+  else if(secs<T_AI)phasePill.textContent='AI Processing';
+  else if(secs<T_TWIN)phasePill.textContent='3D Twin';
+  else phasePill.textContent='Report Ready';
   steps.forEach(function(id,i){
     var el=document.getElementById(id);
-    el.className='tl-dot';
-    el.innerHTML='<i class="ti '+sicons[i]+'"></i>';
+    el.className='tl-dot';el.innerHTML='<i class="ti '+sicons[i]+'"></i>';
     if(secs>=stepStart[i]){
-      var isLast=(i===steps.length-1);
-      var nxtDone=!isLast&&secs>=stepStart[i+1];
-      el.className=nxtDone?'tl-dot done':'tl-dot active';
-      if(nxtDone) el.innerHTML='<i class="ti ti-check"></i>';
+      var nxt=!((i===steps.length-1))&&secs>=stepStart[i+1];
+      el.className=nxt?'tl-dot done':'tl-dot active';
+      if(nxt)el.innerHTML='<i class="ti ti-check"></i>';
     }
   });
-
-  // T_DETECT (50s): capture done → show damage outlines + names (no %)
   if(secs===T_DETECT){
     document.getElementById('scan-line').classList.add('stopped');
-    // SVG bboxes + name labels
     ['bbox1','bbox2','bbox3','bl1a','bl2a','bl3a'].forEach(svgShow);
-    // detection panel: show rows with names only
-    display('detect-waiting','none');
-    display('detect-rows','block');
-    show('r-bic','—'); show('r-type','—'); show('r-grade','—');
-    show('r-d1','<span class="badge badge-amber">Dent</span>');
+    display('detect-waiting','none');display('detect-rows','block');
+    show('r-d1','<span class="badge badge-lime">Dent</span>');
     show('r-d2','<span class="badge badge-red">Rust</span>');
     show('r-d3','<span class="badge badge-orange">Scratch</span>');
-    // 3D pins appear (no % labels yet)
     pinGroup.visible=true;
     document.getElementById('twin-tag').textContent='· 3 damages located';
     document.getElementById('twin-hint').style.display='block';
   }
-
-  // T_AI (110s): AI done → % appears everywhere + flag + BIC
   if(secs===T_AI){
-    // SVG: swap name labels for name+% labels
     ['bl1a','bl2a','bl3a'].forEach(svgHide);
     ['bl1b','bl2b','bl3b'].forEach(svgShow);
-    // detection panel: add %
-    show('r-bic','TCKU 305842 6');
-    show('r-type','20ft · Dry general');
+    show('r-bic','TCKU 305842 6');show('r-type','20ft · Dry general');
     show('r-grade','<span class="badge badge-amber">Grade B</span>');
-    show('r-d1','<span class="badge badge-amber">Dent · 91%</span>');
+    show('r-d1','<span class="badge badge-lime">Dent · 91%</span>');
     show('r-d2','<span class="badge badge-red">Rust · 78%</span>');
     show('r-d3','<span class="badge badge-orange">Scratch · 85%</span>');
     display('flag-row','flex');
     show('r-flag','<span class="badge badge-blue">Human review ×1</span>');
     document.getElementById('flag-bar').style.display='flex';
     document.getElementById('twin-tag').textContent='· 3 defects pinned · confidence scored';
-    // 3D sprite labels: add %
     updateSprites(true);
   }
-
-  // T_TWIN/REPORT (140s): cost + report appear
   if(secs===T_TWIN){
-    display('cost-waiting','none');  display('cost-rows','block');
-    display('report-waiting','none'); display('report-rows','block');
+    display('cost-waiting','none');display('cost-rows','block');
+    display('report-waiting','none');display('report-rows','block');
   }
 },1000);
 </script>
