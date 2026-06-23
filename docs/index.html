@@ -23,7 +23,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .grid-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 14px;}
 .panel-title{font-size:11px;font-weight:600;color:#8b949e;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.cam-feed{background:#0a1628;border-radius:8px;height:140px;position:relative;overflow:hidden;}
+.cam-feed{background:#0a1628;border-radius:8px;height:160px;position:relative;overflow:hidden;}
 .scan-line{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,#1D9E75,transparent);animation:scan 2s linear infinite;top:0;}
 .scan-line.stopped{animation:none;display:none;}
 @keyframes scan{0%{top:0}100%{top:100%}}
@@ -41,7 +41,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .badge-blue{background:#0c2a4a;color:#60a5fa;}
 .badge-orange{background:#3d1f0a;color:#fb923c;}
 .twin-panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 14px;margin-bottom:10px;}
-.twin-area{background:#060e1a;border-radius:8px;height:240px;position:relative;overflow:hidden;}
+.twin-area{background:#060e1a;border-radius:8px;height:280px;position:relative;overflow:hidden;}
 #twin-canvas{width:100%;height:100%;display:block;cursor:grab;}
 #twin-canvas:active{cursor:grabbing;}
 .twin-hint{position:absolute;bottom:8px;right:10px;font-size:9px;color:#5DCAA5;font-family:monospace;opacity:0.7;display:none;}
@@ -51,8 +51,8 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .cost-label{color:#8b949e;font-size:11px;}
 .cost-val{font-weight:500;font-size:12px;color:#e6edf3;}
 .cost-total{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #30363d;}
-.export-btn{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid #30363d;background:#21262d;color:#e6edf3;cursor:pointer;margin-top:10px;width:100%;font-family:system-ui,sans-serif;}
-.export-btn:hover{background:#30363d;}
+.export-btn{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid #1D9E75;background:#0f3d2e;color:#5DCAA5;cursor:pointer;margin-top:10px;width:100%;font-family:system-ui,sans-serif;font-weight:600;}
+.export-btn:hover{background:#1D9E75;color:#fff;}
 .timeline{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 16px;}
 .tl-steps{display:flex;align-items:flex-start;justify-content:space-between;position:relative;padding-top:4px;}
 .tl-track{position:absolute;top:17px;left:24px;right:24px;height:2px;background:#21262d;z-index:0;}
@@ -61,10 +61,9 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #30363d;background:#161b22;color:#8b949e;}
 .tl-dot.done{background:#1D9E75;border-color:#1D9E75;color:#fff;}
 .tl-dot.active{background:#161b22;border-color:#1D9E75;color:#1D9E75;}
-.tl-label{font-size:10px;color:#8b949e;text-align:center;max-width:60px;}
+.tl-label{font-size:10px;color:#8b949e;text-align:center;max-width:64px;}
 .flag-bar{background:#1a1200;border:1px solid #3d2a0a;border-radius:8px;padding:8px 12px;align-items:center;gap:8px;font-size:11px;color:#f59e0b;margin-bottom:10px;display:none;}
-.hidden{display:none;}
-.phase-label{font-size:10px;color:#1D9E75;margin-left:6px;font-weight:400;font-family:monospace;}
+.waiting{font-size:11px;color:#8b949e;padding:6px 0;}
 </style>
 </head>
 <body>
@@ -73,10 +72,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   <div class="logo"><span>VISTA</span> · Live Gate Inspection</div>
   <div style="display:flex;align-items:center;gap:8px;">
     <span class="status-pill" id="phase-pill">Gate Entry</span>
-    <div class="timer-pill">
-      <div class="timer-dot"></div>
-      <span id="timer">00:00</span>
-    </div>
+    <div class="timer-pill"><div class="timer-dot"></div><span id="timer">00:00</span></div>
   </div>
 </div>
 
@@ -93,31 +89,47 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 </div>
 
 <div class="grid-top">
+  <!-- LIVE LANE FEED -->
   <div class="panel">
     <div class="panel-title"><i class="ti ti-camera"></i> Live lane feed</div>
     <div class="cam-feed">
-      <svg width="100%" height="100%" viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
-        <rect width="300" height="140" fill="#0a1628"/>
-        <line x1="0" y1="0" x2="50" y2="40" stroke="#1D9E75" stroke-width="0.5" opacity="0.25"/>
-        <line x1="300" y1="0" x2="250" y2="40" stroke="#1D9E75" stroke-width="0.5" opacity="0.25"/>
-        <line x1="0" y1="140" x2="50" y2="100" stroke="#1D9E75" stroke-width="0.5" opacity="0.25"/>
-        <line x1="300" y1="140" x2="250" y2="100" stroke="#1D9E75" stroke-width="0.5" opacity="0.25"/>
-        <!-- container body -->
-        <rect x="50" y="40" width="200" height="60" fill="#0d2137" stroke="#1D9E75" stroke-width="1" rx="2"/>
-        <!-- vertical ribs -->
-        <line x1="116" y1="40" x2="116" y2="100" stroke="#1D9E75" stroke-width="0.4" opacity="0.35"/>
-        <line x1="150" y1="40" x2="150" y2="100" stroke="#1D9E75" stroke-width="0.4" opacity="0.35"/>
-        <line x1="184" y1="40" x2="184" y2="100" stroke="#1D9E75" stroke-width="0.4" opacity="0.35"/>
-        <!-- damage bbox 1: Dent 91% -->
-        <rect id="bbox1" x="62" y="52" width="34" height="22" fill="rgba(250,204,21,0.08)" stroke="#facc15" stroke-width="1.2" rx="1" opacity="0"/>
-        <text id="blabel1" x="62" y="49" fill="#facc15" font-size="8" font-family="monospace" opacity="0">dent 91%</text>
-        <!-- damage bbox 2: Rust 78% -->
-        <rect id="bbox2" x="158" y="56" width="30" height="20" fill="rgba(248,113,113,0.08)" stroke="#f87171" stroke-width="1.2" rx="1" opacity="0"/>
-        <text id="blabel2" x="155" y="53" fill="#f87171" font-size="8" font-family="monospace" opacity="0">rust 78%</text>
-        <!-- damage bbox 3: Scratch 85% -->
-        <rect id="bbox3" x="108" y="60" width="28" height="16" fill="rgba(251,146,60,0.08)" stroke="#fb923c" stroke-width="1.2" rx="1" opacity="0"/>
-        <text id="blabel3" x="108" y="57" fill="#fb923c" font-size="8" font-family="monospace" opacity="0">scratch 85%</text>
-        <text x="150" y="120" fill="#1D9E75" font-size="8" font-family="monospace" text-anchor="middle" opacity="0.5">TCKU 305842 6 · CAM-01 SIDE-L</text>
+      <svg width="100%" height="100%" viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+        <rect width="300" height="160" fill="#0a1628"/>
+        <!-- perspective lines -->
+        <line x1="0" y1="0" x2="45" y2="38" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
+        <line x1="300" y1="0" x2="255" y2="38" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
+        <line x1="0" y1="160" x2="45" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
+        <line x1="300" y1="160" x2="255" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.2"/>
+        <!-- container body: x=45..255, y=38..122 -->
+        <rect x="45" y="38" width="210" height="84" fill="#0d2137" stroke="#1D9E75" stroke-width="1" rx="2"/>
+        <!-- ceiling stripe -->
+        <rect x="45" y="38" width="210" height="10" fill="#1a3a4a" stroke="none"/>
+        <!-- floor stripe -->
+        <rect x="45" y="114" width="210" height="8" fill="#0a1a0a" stroke="none"/>
+        <!-- vertical ribs at x=45+52=97, 149, 201 -->
+        <line x1="97"  y1="38" x2="97"  y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
+        <line x1="149" y1="38" x2="149" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
+        <line x1="201" y1="38" x2="201" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
+
+        <!-- DAMAGE 1: Dent — left panel, mid-height: cx~75, cy~75 -->
+        <!-- bbox: x=58,y=58 w=38,h=30 → center 77,73 -->
+        <rect id="bbox1" x="58" y="58" width="38" height="30" fill="rgba(250,204,21,0.07)" stroke="#facc15" stroke-width="1.3" rx="1" opacity="0"/>
+        <text id="bl1a" x="58" y="55" fill="#facc15" font-size="8" font-family="monospace" opacity="0">Dent</text>
+        <text id="bl1b" x="58" y="55" fill="#facc15" font-size="8" font-family="monospace" opacity="0">Dent 91%</text>
+
+        <!-- DAMAGE 2: Rust — right panel, lower: cx~220, cy~95 -->
+        <!-- bbox: x=203,y=82 w=36,h=26 → center 221,95 -->
+        <rect id="bbox2" x="203" y="82" width="36" height="26" fill="rgba(248,113,113,0.07)" stroke="#f87171" stroke-width="1.3" rx="1" opacity="0"/>
+        <text id="bl2a" x="203" y="79" fill="#f87171" font-size="8" font-family="monospace" opacity="0">Rust</text>
+        <text id="bl2b" x="203" y="79" fill="#f87171" font-size="8" font-family="monospace" opacity="0">Rust 78%</text>
+
+        <!-- DAMAGE 3: Scratch — center panel, upper: cx~149, cy~58 -->
+        <!-- bbox: x=130,y=46 w=38,h=24 → center 149,58 -->
+        <rect id="bbox3" x="130" y="46" width="38" height="24" fill="rgba(251,146,60,0.07)" stroke="#fb923c" stroke-width="1.3" rx="1" opacity="0"/>
+        <text id="bl3a" x="130" y="43" fill="#fb923c" font-size="8" font-family="monospace" opacity="0">Scratch</text>
+        <text id="bl3b" x="130" y="43" fill="#fb923c" font-size="8" font-family="monospace" opacity="0">Scratch 85%</text>
+
+        <text x="150" y="148" fill="#1D9E75" font-size="8" font-family="monospace" text-anchor="middle" opacity="0.5">TCKU 305842 6 · CAM-01 SIDE-L</text>
       </svg>
       <div class="scan-line" id="scan-line"></div>
       <div class="cam-label">CAM-01 · SIDE-L</div>
@@ -125,61 +137,73 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
     </div>
   </div>
 
+  <!-- DETECTION & IDENTIFICATION -->
   <div class="panel">
     <div class="panel-title"><i class="ti ti-scan"></i> Detection & identification</div>
-    <div class="ocr-row"><span class="ocr-label">BIC code</span><span class="ocr-val" id="r-bic">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Type / size</span><span class="ocr-val" id="r-type">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Condition grade</span><span id="r-grade" class="ocr-val">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Damage #1</span><span id="r-d1" class="ocr-val">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Damage #2</span><span id="r-d2" class="ocr-val">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Damage #3</span><span id="r-d3" class="ocr-val">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Low conf. flag</span><span id="r-flag" class="ocr-val">—</span></div>
+    <div id="detect-waiting" class="waiting">Waiting for capture...</div>
+    <div id="detect-rows" style="display:none">
+      <div class="ocr-row"><span class="ocr-label">BIC code</span><span class="ocr-val" id="r-bic">—</span></div>
+      <div class="ocr-row"><span class="ocr-label">Type / size</span><span class="ocr-val" id="r-type">—</span></div>
+      <div class="ocr-row"><span class="ocr-label">Condition grade</span><span id="r-grade" class="ocr-val">—</span></div>
+      <div class="ocr-row"><span class="ocr-label">Damage #1</span><span id="r-d1" class="ocr-val">—</span></div>
+      <div class="ocr-row"><span class="ocr-label">Damage #2</span><span id="r-d2" class="ocr-val">—</span></div>
+      <div class="ocr-row"><span class="ocr-label">Damage #3</span><span id="r-d3" class="ocr-val">—</span></div>
+      <div class="ocr-row" id="flag-row" style="display:none"><span class="ocr-label">Low conf. flag</span><span id="r-flag" class="ocr-val">—</span></div>
+    </div>
   </div>
 </div>
 
+<!-- 3D TWIN -->
 <div class="twin-panel">
-  <div class="panel-title"><i class="ti ti-box-model"></i> 3D digital twin · damage map <span id="twin-drag-hint" class="phase-label"></span></div>
+  <div class="panel-title"><i class="ti ti-box-model"></i> 3D digital twin · damage map
+    <span id="twin-tag" style="font-size:10px;color:#1D9E75;font-weight:400;margin-left:6px;font-family:monospace;"></span>
+  </div>
   <div class="twin-area">
     <canvas id="twin-canvas"></canvas>
-    <div class="twin-hint" id="twin-hint">drag to rotate · pinch to zoom</div>
+    <div class="twin-hint" id="twin-hint">drag to rotate</div>
   </div>
 </div>
 
+<!-- REPAIR + REPORT -->
 <div class="grid-bottom">
   <div class="panel">
     <div class="panel-title"><i class="ti ti-calculator"></i> Repair estimation · IICL rules</div>
-    <div class="cost-row" id="crow1" style="display:none"><span class="cost-label">① Dent &gt;2cm → Cat B repair</span><span class="cost-val" id="c1">—</span></div>
-    <div class="cost-row" id="crow2" style="display:none"><span class="cost-label">② Rust → patch + recoat</span><span class="cost-val" id="c2">—</span></div>
-    <div class="cost-row" id="crow3" style="display:none"><span class="cost-label">③ Scratch → surface treatment</span><span class="cost-val" id="c3">—</span></div>
-    <div class="cost-row" id="crow4" style="display:none"><span class="cost-label">Shipping-line config</span><span id="c4" class="ocr-val">—</span></div>
-    <div class="cost-total" id="ctotal-row" style="display:none">
-      <span style="font-size:12px;color:#8b949e;">Total estimate</span>
-      <span id="ctotal" style="font-size:16px;font-weight:600;color:#e6edf3;">—</span>
+    <div id="cost-waiting" class="waiting">Waiting for AI processing...</div>
+    <div id="cost-rows" style="display:none">
+      <div class="cost-row"><span class="cost-label">① Dent &gt;2cm → Cat B repair</span><span class="cost-val" id="c1">$180–220</span></div>
+      <div class="cost-row"><span class="cost-label">② Rust → patch + recoat</span><span class="cost-val" id="c2">$140–180</span></div>
+      <div class="cost-row"><span class="cost-label">③ Scratch → surface treatment</span><span class="cost-val" id="c3">$60–90</span></div>
+      <div class="cost-row"><span class="cost-label">Shipping-line config</span><span class="ocr-val"><span class="badge badge-blue">MSC standard</span></span></div>
+      <div class="cost-total">
+        <span style="font-size:12px;color:#8b949e;">Total estimate</span>
+        <span style="font-size:16px;font-weight:600;color:#e6edf3;">$380 – $490</span>
+      </div>
     </div>
-    <div id="cost-waiting" style="font-size:11px;color:#8b949e;padding:8px 0;">Waiting for AI processing...</div>
   </div>
 
   <div class="panel">
     <div class="panel-title"><i class="ti ti-file-text"></i> Audit report</div>
-    <div class="ocr-row"><span class="ocr-label">Inspection ID</span><span class="ocr-val" id="rep-id">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Timestamp</span><span class="ocr-val" id="rep-ts">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Images captured</span><span class="ocr-val" id="rep-img">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">3D twin</span><span id="rep-twin" class="ocr-val">—</span></div>
-    <div class="ocr-row"><span class="ocr-label">Human override</span><span id="rep-ov" class="ocr-val">—</span></div>
-    <button class="export-btn hidden" id="export-btn" onclick="exportPDF()">
-      <i class="ti ti-download"></i> Export PDF report
-    </button>
+    <div id="report-waiting" class="waiting">Waiting for inspection to complete...</div>
+    <div id="report-rows" style="display:none">
+      <div class="ocr-row"><span class="ocr-label">Inspection ID</span><span class="ocr-val">VIS-20260622-0047</span></div>
+      <div class="ocr-row"><span class="ocr-label">Timestamp</span><span class="ocr-val">2026-06-22 · 14:32</span></div>
+      <div class="ocr-row"><span class="ocr-label">Images captured</span><span class="ocr-val">24 frames</span></div>
+      <div class="ocr-row"><span class="ocr-label">3D twin</span><span class="badge badge-green">Linked</span></div>
+      <div class="ocr-row"><span class="ocr-label">Human override</span><span class="badge badge-blue">None logged</span></div>
+      <button class="export-btn" onclick="exportPDF()"><i class="ti ti-download"></i> Export PDF report</button>
+    </div>
   </div>
 </div>
 
+<!-- TIMELINE -->
 <div class="timeline">
   <div class="tl-steps">
     <div class="tl-track"></div>
     <div class="tl-fill" id="tlfill" style="width:0%"></div>
     <div class="tl-step"><div class="tl-dot" id="s1"><i class="ti ti-gate"></i></div><div class="tl-label">Gate Entry</div></div>
-    <div class="tl-step"><div class="tl-dot" id="s2"><i class="ti ti-camera"></i></div><div class="tl-label">Capture</div></div>
-    <div class="tl-step"><div class="tl-dot" id="s3"><i class="ti ti-cpu"></i></div><div class="tl-label">AI Processing</div></div>
-    <div class="tl-step"><div class="tl-dot" id="s4"><i class="ti ti-box-model"></i></div><div class="tl-label">3D Twin</div></div>
+    <div class="tl-step"><div class="tl-dot" id="s2"><i class="ti ti-camera"></i></div><div class="tl-label">Capture<br><span style="color:#5DCAA5">40s</span></div></div>
+    <div class="tl-step"><div class="tl-dot" id="s3"><i class="ti ti-cpu"></i></div><div class="tl-label">AI Processing<br><span style="color:#5DCAA5">60s</span></div></div>
+    <div class="tl-step"><div class="tl-dot" id="s4"><i class="ti ti-box-model"></i></div><div class="tl-label">3D Twin<br><span style="color:#5DCAA5">30s</span></div></div>
     <div class="tl-step"><div class="tl-dot" id="s5"><i class="ti ti-file-text"></i></div><div class="tl-label">Report</div></div>
   </div>
 </div>
@@ -187,161 +211,186 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-// ── TIMING (seconds) ─────────────────────────────────
-// 0–10:   Gate Entry
-// 10–70:  Capture (scan line active, bboxes appear at 70)
-// 70–150: AI Processing (detection panel fills, flag appears)
-// 150–180: 3D Twin (pins appear)
-// 180–210: Report + cost panel
-
-var GATE_END    = 10;
-var CAPTURE_END = 70;
-var AI_END      = 150;
-var TWIN_END    = 180;
-var REPORT_END  = 210;
-var TOTAL       = 210;
+// TIMING
+var T_GATE    = 0;
+var T_CAPTURE = 10;   // capture starts at 10s
+var T_DETECT  = 50;   // capture ends / damages appear (no %) at 50s
+var T_AI      = 110;  // AI done: % appears at 110s
+var T_TWIN    = 140;  // 3D twin built at 140s
+var T_REPORT  = 140;  // report + cost appear together at 140s
+var TOTAL     = 140;
 
 var secs = 0;
-var pinsAdded = false;
-
 var timerEl   = document.getElementById('timer');
-var fill      = document.getElementById('tlfill');
+var fillEl    = document.getElementById('tlfill');
 var phasePill = document.getElementById('phase-pill');
 
 var steps     = ['s1','s2','s3','s4','s5'];
-var icons     = ['ti-gate','ti-camera','ti-cpu','ti-box-model','ti-file-text'];
-var stepStart = [0, GATE_END, CAPTURE_END, AI_END, TWIN_END];
+var sicons    = ['ti-gate','ti-camera','ti-cpu','ti-box-model','ti-file-text'];
+var stepStart = [T_GATE, T_CAPTURE, T_DETECT, T_AI, T_TWIN];
 
-function show(id, html){ document.getElementById(id).innerHTML = html; }
-function svgAttr(id, a, v){ var el=document.getElementById(id); if(el) el.setAttribute(a,v); }
-function unhide(id){ document.getElementById(id).style.display=''; }
+function svgShow(id){ var e=document.getElementById(id); if(e) e.setAttribute('opacity','1'); }
+function svgHide(id){ var e=document.getElementById(id); if(e) e.setAttribute('opacity','0'); }
+function show(id,html){ var e=document.getElementById(id); if(e) e.innerHTML=html; }
+function display(id,v){ var e=document.getElementById(id); if(e) e.style.display=v; }
 
-// ── THREE.JS 3D CONTAINER ────────────────────────────
+// ── THREE.JS ──────────────────────────────────────────────────
 var canvas   = document.getElementById('twin-canvas');
-var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:false});
+var renderer = new THREE.WebGLRenderer({canvas:canvas,antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 renderer.setClearColor(0x060e1a,1);
-renderer.shadowMap.enabled = false;
 
 var scene  = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(40, 2, 0.1, 200);
-camera.position.set(6, 3, 6);
+var W=7, H=1.8, D=2.4;
+
+var camDist = 7;
+var camera = new THREE.PerspectiveCamera(38,2,0.1,200);
+camera.position.set(camDist,3,camDist);
 camera.lookAt(0,0,0);
 
-// lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-var dl1 = new THREE.DirectionalLight(0x5DCAA5, 1.0);
-dl1.position.set(6,10,6); scene.add(dl1);
-var dl2 = new THREE.DirectionalLight(0x4488ff, 0.35);
-dl2.position.set(-6,-4,-6); scene.add(dl2);
+scene.add(new THREE.AmbientLight(0xffffff,0.55));
+var dl=new THREE.DirectionalLight(0x5DCAA5,1.1); dl.position.set(8,12,8); scene.add(dl);
+var dl2=new THREE.DirectionalLight(0x4488ff,0.3); dl2.position.set(-8,-5,-8); scene.add(dl2);
 
 var root = new THREE.Group();
 scene.add(root);
 
-// container dimensions: W=6, H=1.6, D=2.2
-var W=6, H=1.6, D=2.2;
+// floor
+var floorM=new THREE.MeshPhongMaterial({color:0x111a11});
+var floorMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),floorM);
+floorMesh.position.y=-H/2+0.035; root.add(floorMesh);
 
-// --- FLOOR (dark steel) ---
-var floorGeo = new THREE.BoxGeometry(W, 0.06, D);
-var floorMat = new THREE.MeshPhongMaterial({color:0x1a2a1a});
-var floor = new THREE.Mesh(floorGeo, floorMat);
-floor.position.y = -H/2 + 0.03;
-root.add(floor);
+// ceiling
+var ceilM=new THREE.MeshPhongMaterial({color:0x3a5a6a});
+var ceilMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),ceilM);
+ceilMesh.position.y=H/2-0.035; root.add(ceilMesh);
 
-// --- CEILING (light blue-grey corrugated look) ---
-var ceilGeo = new THREE.BoxGeometry(W, 0.06, D);
-var ceilMat = new THREE.MeshPhongMaterial({color:0x4a6a7a});
-var ceil = new THREE.Mesh(ceilGeo, ceilMat);
-ceil.position.y = H/2 - 0.03;
-root.add(ceil);
-
-// --- SIDE WALLS (left & right, Z direction) ---
-function makeSideWall(zPos){
-  var g = new THREE.BoxGeometry(W, H, 0.06);
-  var m = new THREE.MeshPhongMaterial({color:0x0d2a40});
-  var mesh = new THREE.Mesh(g, m);
-  mesh.position.set(0, 0, zPos);
-  root.add(mesh);
+// side walls (front face = +Z, back face = -Z)
+function makeSideWall(z){
+  var m=new THREE.MeshPhongMaterial({color:0x0d2a40,side:THREE.FrontSide});
+  var mesh=new THREE.Mesh(new THREE.BoxGeometry(W,H,0.05),m);
+  mesh.position.set(0,0,z); root.add(mesh);
   // horizontal ribs
-  for(var yi=-0.5; yi<=0.5; yi+=0.5){
-    var rg = new THREE.BoxGeometry(W, 0.04, 0.04);
-    var rm = new THREE.MeshPhongMaterial({color:0x1D9E75, transparent:true, opacity:0.5});
-    var rib = new THREE.Mesh(rg, rm);
-    rib.position.set(0, yi, zPos + (zPos>0?0.05:-0.05));
-    root.add(rib);
-  }
+  [-0.6,-0.2,0.2,0.6].forEach(function(yi){
+    var r=new THREE.Mesh(new THREE.BoxGeometry(W,0.035,0.05),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.45}));
+    r.position.set(0,yi,z+(z>0?0.04:-0.04)); root.add(r);
+  });
   // vertical ribs
-  for(var xi=-2.5; xi<=2.5; xi+=1){
-    var vg = new THREE.BoxGeometry(0.04, H, 0.04);
-    var vm = new THREE.MeshPhongMaterial({color:0x1D9E75, transparent:true, opacity:0.35});
-    var vrib = new THREE.Mesh(vg, vm);
-    vrib.position.set(xi, 0, zPos + (zPos>0?0.05:-0.05));
-    root.add(vrib);
-  }
+  [-3,-2,-1,0,1,2,3].forEach(function(xi){
+    var r=new THREE.Mesh(new THREE.BoxGeometry(0.04,H,0.04),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.3}));
+    r.position.set(xi,0,z+(z>0?0.04:-0.04)); root.add(r);
+  });
 }
-makeSideWall(-D/2);
 makeSideWall(D/2);
+makeSideWall(-D/2);
 
-// --- END WALLS (front & back, X direction) ---
-function makeEndWall(xPos){
-  var g = new THREE.BoxGeometry(0.06, H, D);
-  var m = new THREE.MeshPhongMaterial({color:0x0a2030});
-  var mesh = new THREE.Mesh(g, m);
-  mesh.position.set(xPos, 0, 0);
-  root.add(mesh);
+// end walls
+function makeEnd(x){
+  var m=new THREE.MeshPhongMaterial({color:0x0a2030});
+  root.add(new THREE.Mesh(new THREE.BoxGeometry(0.05,H,D),m)).position.set(x,0,0);
 }
-makeEndWall(-W/2);
-makeEndWall(W/2);
+makeEnd(-W/2); makeEnd(W/2);
 
-// --- EDGES outline ---
-var boxGeo  = new THREE.BoxGeometry(W, H, D);
-var edgesGeo = new THREE.EdgesGeometry(boxGeo);
-var edgesMat = new THREE.LineBasicMaterial({color:0x1D9E75, linewidth:1});
-root.add(new THREE.LineSegments(edgesGeo, edgesMat));
+// edges
+root.add(new THREE.LineSegments(
+  new THREE.EdgesGeometry(new THREE.BoxGeometry(W,H,D)),
+  new THREE.LineBasicMaterial({color:0x1D9E75})
+));
 
-// --- DAMAGE PINS (hidden until twin step) ---
+// ── DAMAGE PINS with canvas sprite labels ────────────────────
+// All 3 damages are on the FRONT side wall (+Z face)
+// Positions mapped to match bbox centers in the SVG:
+//   bbox1 (Dent):    SVG center ~(77,73) → left panel, mid  → x=-2.0, y=0.0
+//   bbox2 (Rust):    SVG center ~(221,95) → right panel, low → x=2.2,  y=-0.35
+//   bbox3 (Scratch): SVG center ~(149,58) → center panel, up → x=0.1,  y=0.45
+
+var damages = [
+  {x:-2.0, y:0.0,   z:D/2, color:0xfacc15, name:'Dent',    pct:'91%', hex:'#facc15'},
+  {x: 2.2, y:-0.35, z:D/2, color:0xf87171, name:'Rust',    pct:'78%', hex:'#f87171'},
+  {x: 0.1, y:0.45,  z:D/2, color:0xfb923c, name:'Scratch', pct:'85%', hex:'#fb923c'},
+];
+
 var pinGroup = new THREE.Group();
 root.add(pinGroup);
 pinGroup.visible = false;
 
-function makePin(x, y, z, color){
-  var sg = new THREE.SphereGeometry(0.12, 16, 16);
-  var sm = new THREE.MeshPhongMaterial({color:color, emissive:color, emissiveIntensity:0.6});
-  var s  = new THREE.Mesh(sg, sm);
-  s.position.set(x,y,z);
-  pinGroup.add(s);
-  var rg = new THREE.SphereGeometry(0.22, 16, 16);
-  var rm = new THREE.MeshPhongMaterial({color:color, transparent:true, opacity:0.2, side:THREE.DoubleSide});
-  var r  = new THREE.Mesh(rg, rm);
-  r.position.set(x,y,z);
-  pinGroup.add(r);
+var sprites = [];
+
+function makeLabel(name, pct, hex, withPct){
+  var c=document.createElement('canvas');
+  c.width=200; c.height=56;
+  var ctx=c.getContext('2d');
+  ctx.clearRect(0,0,200,56);
+  ctx.fillStyle='rgba(6,14,26,0.82)';
+  roundRect(ctx,0,0,200,56,8);
+  ctx.fill();
+  ctx.strokeStyle=hex; ctx.lineWidth=2;
+  roundRect(ctx,0,0,200,56,8);
+  ctx.stroke();
+  ctx.fillStyle=hex;
+  ctx.font='bold 22px monospace';
+  ctx.fillText(name+(withPct?' · '+pct:''),12,36);
+  return c;
 }
-// pin1: Dent 91% — front-left side wall
-makePin(-1.8, 0.1, D/2, 0xfacc15);
-// pin2: Rust 78% — mid-right side wall
-makePin(0.8, -0.2, D/2, 0xf87171);
-// pin3: Scratch 85% — rear side wall
-makePin(2.0, 0.3, -D/2, 0xfb923c);
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+damages.forEach(function(d){
+  // sphere pin
+  var sg=new THREE.SphereGeometry(0.13,20,20);
+  var sm=new THREE.MeshPhongMaterial({color:d.color,emissive:d.color,emissiveIntensity:0.7});
+  var sp=new THREE.Mesh(sg,sm);
+  sp.position.set(d.x,d.y,d.z); pinGroup.add(sp);
+  // halo
+  var hg=new THREE.SphereGeometry(0.24,20,20);
+  var hm=new THREE.MeshPhongMaterial({color:d.color,transparent:true,opacity:0.18,side:THREE.DoubleSide});
+  var hp=new THREE.Mesh(hg,hm);
+  hp.position.set(d.x,d.y,d.z); pinGroup.add(hp);
+  // sprite label (no pct initially)
+  var tex=new THREE.CanvasTexture(makeLabel(d.name,'',d.hex,false));
+  var mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false});
+  var sprite=new THREE.Sprite(mat);
+  sprite.scale.set(1.4,0.4,1);
+  sprite.position.set(d.x, d.y+0.55, d.z+0.1);
+  pinGroup.add(sprite);
+  sprites.push({sprite:sprite, d:d});
+});
+
+function updateSprites(withPct){
+  sprites.forEach(function(s){
+    var tex=new THREE.CanvasTexture(makeLabel(s.d.name,s.d.pct,s.d.hex,withPct));
+    s.sprite.material.map=tex;
+    s.sprite.material.needsUpdate=true;
+  });
+}
 
 // resize
 function resizeTwin(){
-  var w = canvas.parentElement.clientWidth;
-  var h = canvas.parentElement.clientHeight;
+  var w=canvas.parentElement.clientWidth;
+  var h=canvas.parentElement.clientHeight;
   renderer.setSize(w,h,false);
-  camera.aspect = w/h;
+  camera.aspect=w/h;
   camera.updateProjectionMatrix();
 }
 resizeTwin();
-window.addEventListener('resize', resizeTwin);
+window.addEventListener('resize',resizeTwin);
 
-// drag to rotate
-var drag=false, px=0, py=0;
+// drag
+var drag=false,px=0,py=0;
 canvas.addEventListener('mousedown',function(e){drag=true;px=e.clientX;py=e.clientY;});
 window.addEventListener('mouseup',function(){drag=false;});
 window.addEventListener('mousemove',function(e){
   if(!drag)return;
   root.rotation.y+=(e.clientX-px)*0.012;
-  root.rotation.x+=(e.clientY-py)*0.012;
+  root.rotation.x+=(e.clientY-py)*0.008;
   px=e.clientX;py=e.clientY;
 });
 canvas.addEventListener('touchstart',function(e){drag=true;px=e.touches[0].clientX;py=e.touches[0].clientY;},{passive:true});
@@ -349,19 +398,17 @@ window.addEventListener('touchend',function(){drag=false;});
 window.addEventListener('touchmove',function(e){
   if(!drag)return;
   root.rotation.y+=(e.touches[0].clientX-px)*0.012;
-  root.rotation.x+=(e.touches[0].clientY-py)*0.012;
+  root.rotation.x+=(e.touches[0].clientY-py)*0.008;
   px=e.touches[0].clientX;py=e.touches[0].clientY;
 },{passive:true});
 
-// auto-rotate + render loop
-function animateTwin(){
-  requestAnimationFrame(animateTwin);
+(function animate(){
+  requestAnimationFrame(animate);
   if(!drag) root.rotation.y+=0.004;
   renderer.render(scene,camera);
-}
-animateTwin();
+})();
 
-// ── PDF EXPORT ───────────────────────────────────────
+// ── PDF ──────────────────────────────────────────────────────
 function exportPDF(){
   var doc=new jspdf.jsPDF();
   doc.setFillColor(13,17,23); doc.rect(0,0,210,297,'F');
@@ -372,19 +419,10 @@ function exportPDF(){
   doc.setFontSize(9); doc.setTextColor(139,148,158);
   doc.text('Automated Container Inspection System — GWC Depot · Lane 1',14,28);
   doc.setDrawColor(48,54,61); doc.line(14,32,196,32);
-
   var y=42;
-  function section(title){
-    doc.setTextColor(139,148,158); doc.setFontSize(8); doc.setFont('helvetica','bold');
-    doc.text(title,14,y); doc.line(14,y+2,196,y+2); y+=10;
-  }
-  function row(label,val){
-    doc.setFont('helvetica','normal');
-    doc.setTextColor(139,148,158); doc.setFontSize(9); doc.text(label,14,y);
-    doc.setTextColor(230,237,243); doc.text(val,90,y); y+=8;
-  }
-
-  section('INSPECTION DETAILS');
+  function sec(t){doc.setTextColor(139,148,158);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(t,14,y);doc.line(14,y+2,196,y+2);y+=10;}
+  function row(l,v){doc.setFont('helvetica','normal');doc.setTextColor(139,148,158);doc.setFontSize(9);doc.text(l,14,y);doc.setTextColor(230,237,243);doc.text(v,90,y);y+=8;}
+  sec('INSPECTION DETAILS');
   row('Inspection ID','VIS-20260622-0047');
   row('Timestamp','2026-06-22 · 14:32 GST');
   row('Lane','Lane 1 · GWC Depot');
@@ -394,39 +432,23 @@ function exportPDF(){
   row('Images captured','24 frames (multi-angle)');
   row('3D twin status','Linked — 3 defects pinned');
   row('Human override','None logged');
-
-  y+=4; section('DAMAGE DETECTED');
-  doc.setTextColor(139,148,158); doc.setFontSize(8);
-  ['#','Type','Location','Conf.','IICL Action','Est. Cost'].forEach(function(h,i){
-    doc.text(h,[14,26,58,108,128,170][i],y);
-  });
+  y+=4; sec('DAMAGE DETECTED');
+  ['#','Type','Location','Conf.','IICL Action','Est. Cost'].forEach(function(h,i){doc.setTextColor(139,148,158);doc.setFontSize(8);doc.text(h,[14,26,58,108,128,170][i],y);});
   y+=6; doc.line(14,y,196,y); y+=6;
-  [
-    ['#1','Dent','Front-left side panel','91%','Cat B repair','$180–220'],
-    ['#2','Rust','Mid-right side panel','78%','Patch + recoat','$140–180'],
-    ['#3','Scratch','Rear side panel','85%','Surface treatment','$60–90'],
-  ].forEach(function(d){
-    doc.setTextColor(230,237,243); doc.setFontSize(9);
-    d.forEach(function(v,i){ doc.text(v,[14,26,58,108,128,170][i],y); });
-    y+=8;
-  });
-
+  [['#1','Dent','Front-left side panel','91%','Cat B repair','$180–220'],
+   ['#2','Rust','Right side panel','78%','Patch + recoat','$140–180'],
+   ['#3','Scratch','Center upper panel','85%','Surface treatment','$60–90']
+  ].forEach(function(d){doc.setTextColor(230,237,243);doc.setFontSize(9);d.forEach(function(v,i){doc.text(v,[14,26,58,108,128,170][i],y);});y+=8;});
   y+=4; doc.line(14,y,196,y); y+=8;
   doc.setTextColor(29,158,117); doc.setFontSize(11);
   doc.text('Total repair estimate: $380 – $490',14,y);
   doc.setTextColor(139,148,158); doc.setFontSize(8);
   doc.text('Based on IICL rules · MSC shipping-line configuration',14,y+7);
-
-  y+=18; section('IICL RULE REFERENCES');
-  [
-    'Dent >2cm on structural panel → Category B repair (IICL §4.2.1)',
-    'Rust / corrosion penetrating <50% wall thickness → patch and recoat (IICL §4.3.2)',
-    'Surface scratch without structural compromise → surface treatment (IICL §4.1.3)',
-  ].forEach(function(r){
-    doc.setTextColor(230,237,243); doc.setFontSize(9);
-    doc.text('· '+r,14,y); y+=8;
-  });
-
+  y+=18; sec('IICL RULE REFERENCES');
+  ['Dent >2cm on structural panel → Category B repair (IICL §4.2.1)',
+   'Rust / corrosion <50% wall thickness → patch and recoat (IICL §4.3.2)',
+   'Surface scratch without structural compromise → surface treatment (IICL §4.1.3)'
+  ].forEach(function(r){doc.setTextColor(230,237,243);doc.setFontSize(9);doc.text('· '+r,14,y);y+=8;});
   y+=6; doc.setDrawColor(48,54,61); doc.line(14,y,196,y); y+=8;
   doc.setTextColor(139,148,158); doc.setFontSize(8);
   doc.text('Generated by VISTA · Sensifai · '+new Date().toISOString().slice(0,10),14,y);
@@ -434,75 +456,76 @@ function exportPDF(){
   doc.save('VISTA-Report-VIS-20260622-0047.pdf');
 }
 
-// ── TIMELINE ENGINE ──────────────────────────────────
+// ── MAIN TIMER ───────────────────────────────────────────────
 setInterval(function(){
   secs++;
   var m=Math.floor(secs/60).toString().padStart(2,'0');
   var s=(secs%60).toString().padStart(2,'0');
   timerEl.textContent=m+':'+s;
-  fill.style.width=Math.min((secs/TOTAL)*100,100)+'%';
+  fillEl.style.width=Math.min((secs/TOTAL)*100,100)+'%';
 
-  // phase pill label
-  if(secs<GATE_END)         phasePill.textContent='Gate Entry';
-  else if(secs<CAPTURE_END) phasePill.textContent='Capture';
-  else if(secs<AI_END)      phasePill.textContent='AI Processing';
-  else if(secs<TWIN_END)    phasePill.textContent='3D Twin';
-  else                      phasePill.textContent='Report Ready';
+  // phase pill
+  if(secs<T_CAPTURE)      phasePill.textContent='Gate Entry';
+  else if(secs<T_DETECT)  phasePill.textContent='Capture';
+  else if(secs<T_AI)      phasePill.textContent='AI Processing';
+  else if(secs<T_TWIN)    phasePill.textContent='3D Twin';
+  else                    phasePill.textContent='Report Ready';
 
   // timeline dots
   steps.forEach(function(id,i){
     var el=document.getElementById(id);
     el.className='tl-dot';
-    el.innerHTML='<i class="ti '+icons[i]+'"></i>';
+    el.innerHTML='<i class="ti '+sicons[i]+'"></i>';
     if(secs>=stepStart[i]){
-      var isActive = (i===steps.length-1) || secs<stepStart[i+1];
-      if(isActive){ el.className='tl-dot active'; }
-      else{ el.className='tl-dot done'; el.innerHTML='<i class="ti ti-check"></i>'; }
+      var isLast=(i===steps.length-1);
+      var nxtDone=!isLast&&secs>=stepStart[i+1];
+      el.className=nxtDone?'tl-dot done':'tl-dot active';
+      if(nxtDone) el.innerHTML='<i class="ti ti-check"></i>';
     }
   });
 
-  // CAPTURE END (70s): stop scan line, show bboxes
-  if(secs===CAPTURE_END){
+  // T_DETECT (50s): capture done → show damage outlines + names (no %)
+  if(secs===T_DETECT){
     document.getElementById('scan-line').classList.add('stopped');
-    svgAttr('bbox1','opacity','1');   svgAttr('blabel1','opacity','1');
-    svgAttr('bbox2','opacity','1');   svgAttr('blabel2','opacity','1');
-    svgAttr('bbox3','opacity','1');   svgAttr('blabel3','opacity','1');
+    // SVG bboxes + name labels
+    ['bbox1','bbox2','bbox3','bl1a','bl2a','bl3a'].forEach(svgShow);
+    // detection panel: show rows with names only
+    display('detect-waiting','none');
+    display('detect-rows','block');
+    show('r-bic','—'); show('r-type','—'); show('r-grade','—');
+    show('r-d1','<span class="badge badge-amber">Dent</span>');
+    show('r-d2','<span class="badge badge-red">Rust</span>');
+    show('r-d3','<span class="badge badge-orange">Scratch</span>');
+    // 3D pins appear (no % labels yet)
+    pinGroup.visible=true;
+    document.getElementById('twin-tag').textContent='· 3 damages located';
+    document.getElementById('twin-hint').style.display='block';
   }
 
-  // AI PROCESSING mid (110s): fill detection panel
-  if(secs===110){
+  // T_AI (110s): AI done → % appears everywhere + flag + BIC
+  if(secs===T_AI){
+    // SVG: swap name labels for name+% labels
+    ['bl1a','bl2a','bl3a'].forEach(svgHide);
+    ['bl1b','bl2b','bl3b'].forEach(svgShow);
+    // detection panel: add %
     show('r-bic','TCKU 305842 6');
     show('r-type','20ft · Dry general');
     show('r-grade','<span class="badge badge-amber">Grade B</span>');
     show('r-d1','<span class="badge badge-amber">Dent · 91%</span>');
     show('r-d2','<span class="badge badge-red">Rust · 78%</span>');
     show('r-d3','<span class="badge badge-orange">Scratch · 85%</span>');
+    display('flag-row','flex');
     show('r-flag','<span class="badge badge-blue">Human review ×1</span>');
     document.getElementById('flag-bar').style.display='flex';
+    document.getElementById('twin-tag').textContent='· 3 defects pinned · confidence scored';
+    // 3D sprite labels: add %
+    updateSprites(true);
   }
 
-  // 3D TWIN (150s): show pins
-  if(secs===TWIN_END){
-    pinGroup.visible=true;
-    document.getElementById('twin-hint').style.display='block';
-    document.getElementById('twin-drag-hint').textContent='· 3 defects pinned';
-  }
-
-  // REPORT (180s): cost + report panel
-  if(secs===TWIN_END+10){
-    document.getElementById('cost-waiting').style.display='none';
-    unhide('crow1'); unhide('crow2'); unhide('crow3'); unhide('crow4'); unhide('ctotal-row');
-    show('c1','$180–220');
-    show('c2','$140–180');
-    show('c3','$60–90');
-    show('c4','<span class="badge badge-blue">MSC standard</span>');
-    show('ctotal','$380 – $490');
-    show('rep-id','VIS-20260622-0047');
-    show('rep-ts','2026-06-22 · 14:32');
-    show('rep-img','24 frames');
-    show('rep-twin','<span class="badge badge-green">Linked</span>');
-    show('rep-ov','<span class="badge badge-blue">None logged</span>');
-    document.getElementById('export-btn').classList.remove('hidden');
+  // T_TWIN/REPORT (140s): cost + report appear
+  if(secs===T_TWIN){
+    display('cost-waiting','none');  display('cost-rows','block');
+    display('report-waiting','none'); display('report-rows','block');
   }
 },1000);
 </script>
