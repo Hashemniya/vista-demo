@@ -54,6 +54,8 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .cost-total{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #30363d;}
 .export-btn{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid #1D9E75;background:#0f3d2e;color:#5DCAA5;cursor:pointer;margin-top:10px;width:100%;font-family:system-ui,sans-serif;font-weight:600;}
 .export-btn:hover{background:#1D9E75;color:#fff;}
+.export-btn-secondary{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid #30363d;background:#21262d;color:#e6edf3;cursor:pointer;margin-top:6px;width:100%;font-family:system-ui,sans-serif;font-weight:500;}
+.export-btn-secondary:hover{background:#30363d;}
 .timeline{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 16px;}
 .tl-steps{display:flex;align-items:flex-start;justify-content:space-between;position:relative;padding-top:4px;}
 .tl-track{position:absolute;top:17px;left:24px;right:24px;height:2px;background:#21262d;z-index:0;}
@@ -85,7 +87,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 <div class="metrics">
   <div class="metric"><div class="metric-label">Containers today</div><div class="metric-val">47</div><div class="metric-sub">+12% vs avg</div></div>
   <div class="metric"><div class="metric-label">Avg inspection</div><div class="metric-val">2:38</div><div class="metric-sub">Target &lt;3 min</div></div>
-  <div class="metric"><div class="metric-label">Detection accuracy</div><div class="metric-val">83%</div><div class="metric-sub">Validated pilot</div></div>
+  <div class="metric"><div class="metric-label">Detection accuracy</div><div class="metric-val">93%</div><div class="metric-sub">Pilot validation</div></div>
   <div class="metric"><div class="metric-label">Reports exported</div><div class="metric-val">44</div><div class="metric-sub">Auto-generated</div></div>
 </div>
 
@@ -105,19 +107,16 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
         <line x1="97"  y1="38" x2="97"  y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
         <line x1="149" y1="38" x2="149" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
         <line x1="201" y1="38" x2="201" y2="122" stroke="#1D9E75" stroke-width="0.5" opacity="0.4"/>
-        <!-- Dent: left panel mid -->
         <rect id="bbox1" x="58" y="58" width="38" height="30" fill="rgba(74,222,128,0.07)" stroke="#4ade80" stroke-width="1.3" rx="1" opacity="0"/>
         <text id="bl1a" x="58" y="55" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">Dent</text>
         <text id="bl1b" x="58" y="55" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">Dent 91%</text>
-        <!-- Rust: right panel lower -->
         <rect id="bbox2" x="203" y="82" width="36" height="26" fill="rgba(248,113,113,0.07)" stroke="#f87171" stroke-width="1.3" rx="1" opacity="0"/>
         <text id="bl2a" x="203" y="79" fill="#f87171" font-size="8" font-family="monospace" opacity="0">Rust</text>
         <text id="bl2b" x="203" y="79" fill="#f87171" font-size="8" font-family="monospace" opacity="0">Rust 78%</text>
-        <!-- Scratch: center upper -->
         <rect id="bbox3" x="130" y="46" width="38" height="24" fill="rgba(251,146,60,0.07)" stroke="#fb923c" stroke-width="1.3" rx="1" opacity="0"/>
         <text id="bl3a" x="130" y="43" fill="#fb923c" font-size="8" font-family="monospace" opacity="0">Scratch</text>
         <text id="bl3b" x="130" y="43" fill="#fb923c" font-size="8" font-family="monospace" opacity="0">Scratch 85%</text>
-        <text x="150" y="148" fill="#1D9E75" font-size="8" font-family="monospace" text-anchor="middle" opacity="0.5">TCKU 305842 6 · CAM-01 SIDE-L</text>
+        <text x="150" y="148" fill="#1D9E75" font-size="8" font-family="monospace" text-anchor="middle" opacity="0.5">TCKU 305842 9 · CAM-01 SIDE-L</text>
       </svg>
       <div class="scan-line" id="scan-line"></div>
       <div class="cam-label">CAM-01 · SIDE-L</div>
@@ -136,6 +135,8 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
       <div class="ocr-row"><span class="ocr-label">Damage #2</span><span id="r-d2" class="ocr-val">—</span></div>
       <div class="ocr-row"><span class="ocr-label">Damage #3</span><span id="r-d3" class="ocr-val">—</span></div>
       <div class="ocr-row" id="flag-row" style="display:none"><span class="ocr-label">Low conf. flag</span><span id="r-flag" class="ocr-val">—</span></div>
+      <div class="ocr-row" id="ocr-conf-row" style="display:none"><span class="ocr-label">OCR confidence</span><span id="r-ocr" class="ocr-val">—</span></div>
+      <div class="ocr-row" id="bic-val-row" style="display:none"><span class="ocr-label">BIC validation</span><span id="r-bicval" class="ocr-val">—</span></div>
     </div>
   </div>
 </div>
@@ -176,6 +177,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
       <div class="ocr-row"><span class="ocr-label">3D twin</span><span class="badge badge-green">Linked</span></div>
       <div class="ocr-row"><span class="ocr-label">Human override</span><span class="badge badge-blue">None logged</span></div>
       <button class="export-btn" onclick="exportPDF()"><i class="ti ti-download"></i> Export PDF report</button>
+      <button class="export-btn-secondary" onclick="exportJSON()"><i class="ti ti-braces"></i> Export JSON report</button>
     </div>
   </div>
 </div>
@@ -195,7 +197,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-var T_CAPTURE=10, T_DETECT=50, T_AI=110, T_TWIN=140, TOTAL=140;
+var T_CAPTURE=10,T_DETECT=50,T_AI=110,T_TWIN=140,TOTAL=140;
 var secs=0;
 var timerEl=document.getElementById('timer');
 var fillEl=document.getElementById('tlfill');
@@ -224,16 +226,14 @@ var dl=new THREE.DirectionalLight(0x5DCAA5,1.1);dl.position.set(8,12,8);scene.ad
 var dl2=new THREE.DirectionalLight(0x4488ff,0.3);dl2.position.set(-8,-5,-8);scene.add(dl2);
 var root=new THREE.Group();scene.add(root);
 
-// floor
 var floorMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),new THREE.MeshPhongMaterial({color:0x111a11}));
 floorMesh.position.y=-H/2+0.035;root.add(floorMesh);
-// ceiling
 var ceilMesh=new THREE.Mesh(new THREE.BoxGeometry(W,0.07,D),new THREE.MeshPhongMaterial({color:0x3a5a6a}));
 ceilMesh.position.y=H/2-0.035;root.add(ceilMesh);
 
-// side walls
 function makeSideWall(z){
-  root.add(new THREE.Mesh(new THREE.BoxGeometry(W,H,0.05),new THREE.MeshPhongMaterial({color:0x0d2a40,side:THREE.DoubleSide}))).position.set(0,0,z);
+  var mesh=new THREE.Mesh(new THREE.BoxGeometry(W,H,0.05),new THREE.MeshPhongMaterial({color:0x0d2a40,side:THREE.DoubleSide}));
+  mesh.position.set(0,0,z);root.add(mesh);
   [-0.6,-0.2,0.2,0.6].forEach(function(yi){
     var r=new THREE.Mesh(new THREE.BoxGeometry(W,0.035,0.05),new THREE.MeshPhongMaterial({color:0x1D9E75,transparent:true,opacity:0.45}));
     r.position.set(0,yi,z+(z>0?0.04:-0.04));root.add(r);
@@ -245,7 +245,6 @@ function makeSideWall(z){
 }
 makeSideWall(D/2);makeSideWall(-D/2);
 
-// end walls — DoubleSide so visible from outside
 function makeEnd(x){
   var m=new THREE.MeshPhongMaterial({color:0x0a2030,side:THREE.DoubleSide});
   var mesh=new THREE.Mesh(new THREE.BoxGeometry(0.05,H,D),m);
@@ -261,10 +260,8 @@ function makeEnd(x){
 }
 makeEnd(-W/2);makeEnd(W/2);
 
-// edges
 root.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W,H,D)),new THREE.LineBasicMaterial({color:0x1D9E75})));
 
-// damage pins — positions matched to SVG bboxes
 var damages=[
   {x:-2.0,y:0.0, z:D/2,color:0x4ade80,name:'Dent',   pct:'91%',hex:'#4ade80'},
   {x:2.2, y:-0.35,z:D/2,color:0xf87171,name:'Rust',   pct:'78%',hex:'#f87171'},
@@ -342,8 +339,9 @@ function exportPDF(){
   function row(l,v){doc.setFont('helvetica','normal');doc.setTextColor(139,148,158);doc.setFontSize(9);doc.text(l,14,y);doc.setTextColor(230,237,243);doc.text(v,90,y);y+=8;}
   sec('INSPECTION DETAILS');
   row('Inspection ID','VIS-20260622-0047');row('Timestamp','2026-06-22 · 14:32 GST');
-  row('Lane','Lane 1 · GWC Depot');row('BIC Code','TCKU 305842 6');
+  row('Lane','Lane 1 · GWC Depot');row('BIC Code','TCKU 305842 9');
   row('Container type','20ft · Dry general');row('Condition grade','Grade B');
+  row('OCR confidence','96%');row('BIC validation','Passed');
   row('Images captured','24 frames (multi-angle)');row('3D twin status','Linked — 3 defects pinned');
   row('Human override','None logged');
   y+=4;sec('DAMAGE DETECTED');
@@ -368,6 +366,40 @@ function exportPDF(){
   doc.save('VISTA-Report-VIS-20260622-0047.pdf');
 }
 
+// JSON
+function exportJSON(){
+  var report={
+    inspection_id:'VIS-20260622-0047',
+    timestamp:'2026-06-22T14:32:00+03:00',
+    lane:'Lane 1 · GWC Depot',
+    container:{
+      bic_code:'TCKU 305842 9',
+      type:'20ft Dry general',
+      condition_grade:'B',
+      ocr_confidence:'96%',
+      bic_validation:'passed'
+    },
+    damages:[
+      {id:1,type:'Dent',location:'Front-left side panel',confidence:'91%',iicl_action:'Cat B repair',cost_estimate_usd:{min:180,max:220}},
+      {id:2,type:'Rust',location:'Right side panel',confidence:'78%',iicl_action:'Patch and recoat',cost_estimate_usd:{min:140,max:180}},
+      {id:3,type:'Scratch',location:'Center upper panel',confidence:'85%',iicl_action:'Surface treatment',cost_estimate_usd:{min:60,max:90}}
+    ],
+    low_confidence_flag:true,
+    human_override:false,
+    shipping_line_config:'MSC standard',
+    total_cost_estimate_usd:{min:380,max:490},
+    images_captured:24,
+    iicl_rules_applied:['IICL §4.2.1','IICL §4.3.2','IICL §4.1.3'],
+    generated_by:'VISTA · Sensifai',
+    generated_at:new Date().toISOString()
+  };
+  var blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='VISTA-Report-VIS-20260622-0047.json';
+  a.click();
+}
+
 // TIMER
 setInterval(function(){
   secs++;
@@ -383,7 +415,7 @@ setInterval(function(){
     var el=document.getElementById(id);
     el.className='tl-dot';el.innerHTML='<i class="ti '+sicons[i]+'"></i>';
     if(secs>=stepStart[i]){
-      var nxt=!((i===steps.length-1))&&secs>=stepStart[i+1];
+      var nxt=!(i===steps.length-1)&&secs>=stepStart[i+1];
       el.className=nxt?'tl-dot done':'tl-dot active';
       if(nxt)el.innerHTML='<i class="ti ti-check"></i>';
     }
@@ -402,13 +434,17 @@ setInterval(function(){
   if(secs===T_AI){
     ['bl1a','bl2a','bl3a'].forEach(svgHide);
     ['bl1b','bl2b','bl3b'].forEach(svgShow);
-    show('r-bic','TCKU 305842 6');show('r-type','20ft · Dry general');
+    show('r-bic','TCKU 305842 9');show('r-type','20ft · Dry general');
     show('r-grade','<span class="badge badge-amber">Grade B</span>');
     show('r-d1','<span class="badge badge-lime">Dent · 91%</span>');
     show('r-d2','<span class="badge badge-red">Rust · 78%</span>');
     show('r-d3','<span class="badge badge-orange">Scratch · 85%</span>');
     display('flag-row','flex');
     show('r-flag','<span class="badge badge-blue">Human review ×1</span>');
+    display('ocr-conf-row','flex');
+    show('r-ocr','96%');
+    display('bic-val-row','flex');
+    show('r-bicval','<span class="badge badge-green">Passed</span>');
     document.getElementById('flag-bar').style.display='flex';
     document.getElementById('twin-tag').textContent='· 3 defects pinned · confidence scored';
     updateSprites(true);
