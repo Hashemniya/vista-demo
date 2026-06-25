@@ -15,6 +15,15 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .timer-dot{width:8px;height:8px;border-radius:50%;background:#1D9E75;animation:pulse 1.2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 .status-pill{font-size:11px;padding:3px 10px;border-radius:999px;background:#0f3d2e;color:#5DCAA5;font-weight:500;}
+.timeline{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 16px;margin-bottom:12px;}
+.tl-steps{display:flex;align-items:flex-start;justify-content:space-between;position:relative;padding-top:4px;}
+.tl-track{position:absolute;top:17px;left:24px;right:24px;height:2px;background:#21262d;z-index:0;}
+.tl-fill{position:absolute;top:17px;left:24px;height:2px;background:#1D9E75;z-index:1;transition:width 0.5s;}
+.tl-step{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2;}
+.tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #30363d;background:#161b22;color:#8b949e;}
+.tl-dot.done{background:#1D9E75;border-color:#1D9E75;color:#fff;}
+.tl-dot.active{background:#161b22;border-color:#1D9E75;color:#1D9E75;}
+.tl-label{font-size:10px;color:#8b949e;text-align:center;max-width:64px;}
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
 .metric{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:10px 14px;}
 .metric-label{font-size:11px;color:#8b949e;margin-bottom:4px;}
@@ -56,21 +65,13 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
 .export-btn:hover{background:#1D9E75;color:#fff;}
 .export-btn-secondary{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid #30363d;background:#21262d;color:#e6edf3;cursor:pointer;margin-top:6px;width:100%;font-family:system-ui,sans-serif;font-weight:500;}
 .export-btn-secondary:hover{background:#30363d;}
-.timeline{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:12px 16px;}
-.tl-steps{display:flex;align-items:flex-start;justify-content:space-between;position:relative;padding-top:4px;}
-.tl-track{position:absolute;top:17px;left:24px;right:24px;height:2px;background:#21262d;z-index:0;}
-.tl-fill{position:absolute;top:17px;left:24px;height:2px;background:#1D9E75;z-index:1;transition:width 0.5s;}
-.tl-step{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2;}
-.tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #30363d;background:#161b22;color:#8b949e;}
-.tl-dot.done{background:#1D9E75;border-color:#1D9E75;color:#fff;}
-.tl-dot.active{background:#161b22;border-color:#1D9E75;color:#1D9E75;}
-.tl-label{font-size:10px;color:#8b949e;text-align:center;max-width:64px;}
 .flag-bar{background:#1a1200;border:1px solid #3d2a0a;border-radius:8px;padding:8px 12px;align-items:center;gap:8px;font-size:11px;color:#f59e0b;margin-bottom:10px;display:none;}
 .waiting{font-size:11px;color:#8b949e;padding:6px 0;}
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="logo"><span>VISTA</span> · Live Gate Inspection</div>
   <div style="display:flex;align-items:center;gap:8px;">
@@ -79,11 +80,26 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   </div>
 </div>
 
+<!-- TIMELINE — moved to top -->
+<div class="timeline">
+  <div class="tl-steps">
+    <div class="tl-track"></div>
+    <div class="tl-fill" id="tlfill" style="width:0%"></div>
+    <div class="tl-step"><div class="tl-dot" id="s1"><i class="ti ti-gate"></i></div><div class="tl-label">Gate Entry</div></div>
+    <div class="tl-step"><div class="tl-dot" id="s2"><i class="ti ti-camera"></i></div><div class="tl-label">Capture<br><span style="color:#5DCAA5">40s</span></div></div>
+    <div class="tl-step"><div class="tl-dot" id="s3"><i class="ti ti-cpu"></i></div><div class="tl-label">AI Processing<br><span style="color:#5DCAA5">60s</span></div></div>
+    <div class="tl-step"><div class="tl-dot" id="s4"><i class="ti ti-box-model"></i></div><div class="tl-label">3D Twin<br><span style="color:#5DCAA5">30s</span></div></div>
+    <div class="tl-step"><div class="tl-dot" id="s5"><i class="ti ti-file-text"></i></div><div class="tl-label">Report</div></div>
+  </div>
+</div>
+
+<!-- FLAG BAR -->
 <div class="flag-bar" id="flag-bar">
   <i class="ti ti-alert-triangle"></i>
   Low confidence detection on surface #4 — flagged for human review
 </div>
 
+<!-- METRICS -->
 <div class="metrics">
   <div class="metric"><div class="metric-label">Containers today</div><div class="metric-val">47</div><div class="metric-sub">+12% vs avg</div></div>
   <div class="metric"><div class="metric-label">Avg inspection</div><div class="metric-val">2:38</div><div class="metric-sub">Target &lt;3 min</div></div>
@@ -91,6 +107,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   <div class="metric"><div class="metric-label">Reports exported</div><div class="metric-val">44</div><div class="metric-sub">Auto-generated</div></div>
 </div>
 
+<!-- LIVE FEED + DETECTION -->
 <div class="grid-top">
   <div class="panel">
     <div class="panel-title"><i class="ti ti-camera"></i> Live lane feed</div>
@@ -141,6 +158,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   </div>
 </div>
 
+<!-- 3D TWIN -->
 <div class="twin-panel">
   <div class="panel-title"><i class="ti ti-box-model"></i> 3D digital twin · damage map
     <span id="twin-tag" style="font-size:10px;color:#1D9E75;font-weight:400;margin-left:6px;font-family:monospace;"></span>
@@ -151,6 +169,7 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
   </div>
 </div>
 
+<!-- REPAIR + REPORT -->
 <div class="grid-bottom">
   <div class="panel">
     <div class="panel-title"><i class="ti ti-calculator"></i> Repair estimation · IICL rules</div>
@@ -179,18 +198,6 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-heigh
       <button class="export-btn" onclick="exportPDF()"><i class="ti ti-download"></i> Export PDF report</button>
       <button class="export-btn-secondary" onclick="exportJSON()"><i class="ti ti-braces"></i> Export JSON report</button>
     </div>
-  </div>
-</div>
-
-<div class="timeline">
-  <div class="tl-steps">
-    <div class="tl-track"></div>
-    <div class="tl-fill" id="tlfill" style="width:0%"></div>
-    <div class="tl-step"><div class="tl-dot" id="s1"><i class="ti ti-gate"></i></div><div class="tl-label">Gate Entry</div></div>
-    <div class="tl-step"><div class="tl-dot" id="s2"><i class="ti ti-camera"></i></div><div class="tl-label">Capture<br><span style="color:#5DCAA5">40s</span></div></div>
-    <div class="tl-step"><div class="tl-dot" id="s3"><i class="ti ti-cpu"></i></div><div class="tl-label">AI Processing<br><span style="color:#5DCAA5">60s</span></div></div>
-    <div class="tl-step"><div class="tl-dot" id="s4"><i class="ti ti-box-model"></i></div><div class="tl-label">3D Twin<br><span style="color:#5DCAA5">30s</span></div></div>
-    <div class="tl-step"><div class="tl-dot" id="s5"><i class="ti ti-file-text"></i></div><div class="tl-label">Report</div></div>
   </div>
 </div>
 
@@ -326,7 +333,6 @@ window.addEventListener('touchmove',function(e){if(!drag)return;root.rotation.y+
 
 (function animate(){requestAnimationFrame(animate);if(!drag)root.rotation.y+=0.004;renderer.render(scene,camera);})();
 
-// PDF
 function exportPDF(){
   var doc=new jspdf.jsPDF();
   doc.setFillColor(13,17,23);doc.rect(0,0,210,297,'F');
@@ -366,41 +372,27 @@ function exportPDF(){
   doc.save('VISTA-Report-VIS-20260622-0047.pdf');
 }
 
-// JSON
 function exportJSON(){
   var report={
     inspection_id:'VIS-20260622-0047',
     timestamp:'2026-06-22T14:32:00+03:00',
     lane:'Lane 1 · GWC Depot',
-    container:{
-      bic_code:'TCKU 305842 9',
-      type:'20ft Dry general',
-      condition_grade:'B',
-      ocr_confidence:'96%',
-      bic_validation:'passed'
-    },
+    container:{bic_code:'TCKU 305842 9',type:'20ft Dry general',condition_grade:'B',ocr_confidence:'96%',bic_validation:'passed'},
     damages:[
       {id:1,type:'Dent',location:'Front-left side panel',confidence:'91%',iicl_action:'Cat B repair',cost_estimate_usd:{min:180,max:220}},
       {id:2,type:'Rust',location:'Right side panel',confidence:'78%',iicl_action:'Patch and recoat',cost_estimate_usd:{min:140,max:180}},
       {id:3,type:'Scratch',location:'Center upper panel',confidence:'85%',iicl_action:'Surface treatment',cost_estimate_usd:{min:60,max:90}}
     ],
-    low_confidence_flag:true,
-    human_override:false,
-    shipping_line_config:'MSC standard',
-    total_cost_estimate_usd:{min:380,max:490},
-    images_captured:24,
+    low_confidence_flag:true,human_override:false,shipping_line_config:'MSC standard',
+    total_cost_estimate_usd:{min:380,max:490},images_captured:24,
     iicl_rules_applied:['IICL §4.2.1','IICL §4.3.2','IICL §4.1.3'],
-    generated_by:'VISTA · Sensifai',
-    generated_at:new Date().toISOString()
+    generated_by:'VISTA · Sensifai',generated_at:new Date().toISOString()
   };
   var blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='VISTA-Report-VIS-20260622-0047.json';
-  a.click();
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='VISTA-Report-VIS-20260622-0047.json';a.click();
 }
 
-// TIMER
 setInterval(function(){
   secs++;
   var m=Math.floor(secs/60).toString().padStart(2,'0'),s=(secs%60).toString().padStart(2,'0');
@@ -439,12 +431,9 @@ setInterval(function(){
     show('r-d1','<span class="badge badge-lime">Dent · 91%</span>');
     show('r-d2','<span class="badge badge-red">Rust · 78%</span>');
     show('r-d3','<span class="badge badge-orange">Scratch · 85%</span>');
-    display('flag-row','flex');
-    show('r-flag','<span class="badge badge-blue">Human review ×1</span>');
-    display('ocr-conf-row','flex');
-    show('r-ocr','96%');
-    display('bic-val-row','flex');
-    show('r-bicval','<span class="badge badge-green">Passed</span>');
+    display('flag-row','flex');show('r-flag','<span class="badge badge-blue">Human review ×1</span>');
+    display('ocr-conf-row','flex');show('r-ocr','96%');
+    display('bic-val-row','flex');show('r-bicval','<span class="badge badge-green">Passed</span>');
     document.getElementById('flag-bar').style.display='flex';
     document.getElementById('twin-tag').textContent='· 3 defects pinned · confidence scored';
     updateSprites(true);
